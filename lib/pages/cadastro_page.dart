@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:uber_clone_13/widgets/formField_widget.dart';
 
@@ -9,17 +10,30 @@ class CadastroPage extends StatefulWidget {
 }
 
 class _CadastroPageState extends State<CadastroPage> {
-  final nomeController = TextEditingController();
-  final emailController = TextEditingController();
-  final senhaController = TextEditingController();
+  final nomeController = TextEditingController(text: "Francisco Junio");
+  final emailController = TextEditingController(text: "juniophb2004@gmail.com");
+  final senhaController = TextEditingController(text: "123456");
   final _formKey = GlobalKey<FormState>();
 
   login() {
     Navigator.pushNamed(context, "/login");
   }
 
-  cadastrar() {
-    if (_formKey.currentState!.validate()) {}
+  cadastrar(String email, String password) async {
+    if (_formKey.currentState!.validate()) {
+      final auth = FirebaseAuth.instance;
+      try {
+        await auth.createUserWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+        if (mounted) {
+          Navigator.pushNamedAndRemoveUntil(context, "/home", (_) => false);
+        }
+      } catch (e) {
+        print(e.toString());
+      }
+    }
   }
 
   @override
@@ -109,7 +123,8 @@ class _CadastroPageState extends State<CadastroPage> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.black,
                   ),
-                  onPressed: () => cadastrar(),
+                  onPressed: () =>
+                      cadastrar(emailController.text, senhaController.text),
                   child: const Text(
                     "Cadastrar",
                     style: TextStyle(

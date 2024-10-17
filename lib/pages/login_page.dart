@@ -1,5 +1,4 @@
-import 'dart:math';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:uber_clone_13/widgets/formField_widget.dart';
 
@@ -18,8 +17,21 @@ class _LoginPageState extends State<LoginPage> {
     Navigator.pushNamed(context, "/cadastro");
   }
 
-  login() {
-    if (_formKey.currentState!.validate()) {}
+  login(String email, String password) async {
+    if (_formKey.currentState!.validate()) {
+      final auth = FirebaseAuth.instance;
+      try {
+        await auth.signInWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+        if (mounted) {
+          Navigator.pushReplacementNamed(context, "/home");
+        }
+      } catch (e) {
+        print(e.toString());
+      }
+    }
   }
 
   @override
@@ -84,7 +96,8 @@ class _LoginPageState extends State<LoginPage> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.black,
                   ),
-                  onPressed: () => login(),
+                  onPressed: () =>
+                      login(emailController.text, senhaController.text),
                   child: const Text(
                     "Entrar",
                     style: TextStyle(
