@@ -34,6 +34,24 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  verificarLogin() {
+    final auth = FirebaseAuth.instance;
+    if (auth.currentUser != null) {
+      Navigator.pushReplacementNamed(context, "/home");
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    /*função usada para agendar uma ação que será executada 
+    após a construção da interface */
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      verificarLogin();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

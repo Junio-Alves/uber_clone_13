@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:uber_clone_13/pages/cadastro_page.dart';
 import 'package:uber_clone_13/pages/home_page.dart';
 import 'package:uber_clone_13/pages/login_page.dart';
+import 'package:uber_clone_13/pages/search_page.dart';
 
 class RouteGenerator {
   static Route<dynamic>? generate(RouteSettings settings) {
@@ -17,6 +18,10 @@ class RouteGenerator {
       case "/home":
         return MaterialPageRoute(
           builder: (context) => const HomePage(),
+        );
+      case "/search":
+        return MaterialPageRoute(
+          builder: (context) => const SearchPage(),
         );
       default:
         return MaterialPageRoute(

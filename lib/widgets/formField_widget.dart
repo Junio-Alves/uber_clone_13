@@ -36,6 +36,5 @@ class FormfieldWidget extends StatelessWidget {
         ),
       ),
     );
-    ;
   }
 }
