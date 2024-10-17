@@ -66,6 +66,8 @@ class _CadastroPageState extends State<CadastroPage> {
                 validator: (nome) {
                   if (nome == null || nome.isEmpty) {
                     return "Digite um nome!";
+                  } else if (nome.length < 3) {
+                    return "Nome muito pequeno!";
                   }
                   return null;
                 },
@@ -74,8 +76,13 @@ class _CadastroPageState extends State<CadastroPage> {
                 controller: emailController,
                 hintText: "E-mail",
                 validator: (email) {
+                  final emailExp = RegExp(
+                      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+                      caseSensitive: false);
                   if (email == null || email.isEmpty) {
                     return "Digite um email!";
+                  } else if (!emailExp.hasMatch(email)) {
+                    return "E-mail invalido";
                   }
                   return null;
                 },
@@ -87,6 +94,8 @@ class _CadastroPageState extends State<CadastroPage> {
                   validator: (senha) {
                     if (senha == null || senha.isEmpty) {
                       return "Digite uma senha!";
+                    } else if (senha.length < 6) {
+                      return "Senha deve conter no mínimo 6 digitos!";
                     }
                     return null;
                   }),
