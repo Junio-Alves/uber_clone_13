@@ -9,8 +9,17 @@ class CadastroPage extends StatefulWidget {
 }
 
 class _CadastroPageState extends State<CadastroPage> {
+  final nomeController = TextEditingController();
+  final emailController = TextEditingController();
+  final senhaController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
   login() {
     Navigator.pushNamed(context, "/login");
+  }
+
+  cadastrar() {
+    if (_formKey.currentState!.validate()) {}
   }
 
   @override
@@ -31,58 +40,82 @@ class _CadastroPageState extends State<CadastroPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.only(left: 50, right: 50),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(
-              "assets/images/uber_logo.png",
-              width: 400,
-            ),
-            const Padding(
-              padding: EdgeInsets.only(top: 10, bottom: 10),
-              child: Text(
-                "Cadastro",
-                style: TextStyle(
-                  fontSize: 20,
-                  color: Colors.black54,
-                  fontWeight: FontWeight.w500,
-                ),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                "assets/images/uber_logo.png",
+                width: 400,
               ),
-            ),
-            const FormfieldWidget(
-              hintText: "Nome",
-            ),
-            const FormfieldWidget(
-              hintText: "E-mail",
-            ),
-            const FormfieldWidget(
-              hintText: "Senha",
-            ),
-            const SizedBox(
-              height: 60,
-            ),
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                ),
-                onPressed: () {},
-                child: const Text(
-                  "Cadastrar",
+              const Padding(
+                padding: EdgeInsets.only(top: 10, bottom: 10),
+                child: Text(
+                  "Cadastro",
                   style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 20),
+                    fontSize: 20,
+                    color: Colors.black54,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
-            ),
-            TextButton(
-              onPressed: () => login(),
-              child: const Text("Já tem conta? Faça o login!"),
-            )
-          ],
+              FormfieldWidget(
+                controller: nomeController,
+                hintText: "Nome",
+                validator: (nome) {
+                  if (nome == null || nome.isEmpty) {
+                    return "Digite um nome!";
+                  }
+                  return null;
+                },
+              ),
+              FormfieldWidget(
+                controller: emailController,
+                hintText: "E-mail",
+                validator: (email) {
+                  if (email == null || email.isEmpty) {
+                    return "Digite um email!";
+                  }
+                  return null;
+                },
+              ),
+              FormfieldWidget(
+                  controller: senhaController,
+                  hintText: "Senha",
+                  obscureText: true,
+                  validator: (senha) {
+                    if (senha == null || senha.isEmpty) {
+                      return "Digite uma senha!";
+                    }
+                    return null;
+                  }),
+              const SizedBox(
+                height: 60,
+              ),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                  ),
+                  onPressed: () => cadastrar(),
+                  child: const Text(
+                    "Cadastrar",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 20),
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: () => login(),
+                child: const Text("Já tem conta? Faça o login!"),
+              )
+            ],
+          ),
         ),
       ),
     );
