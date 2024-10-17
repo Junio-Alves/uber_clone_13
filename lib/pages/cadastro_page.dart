@@ -1,21 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:uber_clone_13/widgets/formField_widget.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class CadastroPage extends StatefulWidget {
+  const CadastroPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<CadastroPage> createState() => _CadastroPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
-  cadastrar() {
-    Navigator.pushNamed(context, "/cadastro");
+class _CadastroPageState extends State<CadastroPage> {
+  login() {
+    Navigator.pushNamed(context, "/login");
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+            )),
+        title: const Text(
+          "Cadastro",
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.black,
+      ),
       body: Padding(
         padding: const EdgeInsets.only(left: 50, right: 50),
         child: Column(
@@ -28,13 +41,16 @@ class _LoginPageState extends State<LoginPage> {
             const Padding(
               padding: EdgeInsets.only(top: 10, bottom: 10),
               child: Text(
-                "Login",
+                "Cadastro",
                 style: TextStyle(
                   fontSize: 20,
                   color: Colors.black54,
                   fontWeight: FontWeight.w500,
                 ),
               ),
+            ),
+            const FormfieldWidget(
+              hintText: "Nome",
             ),
             const FormfieldWidget(
               hintText: "E-mail",
@@ -54,7 +70,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 onPressed: () {},
                 child: const Text(
-                  "Entrar",
+                  "Cadastrar",
                   style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w500,
@@ -63,8 +79,8 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             TextButton(
-              onPressed: () => cadastrar(),
-              child: const Text("Não tem conta? Cadastre-se!"),
+              onPressed: () => login(),
+              child: const Text("Já tem conta? Faça o login!"),
             )
           ],
         ),
