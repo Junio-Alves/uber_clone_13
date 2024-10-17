@@ -1,6 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:uber_clone_13/widgets/formField_widget.dart';
+import 'package:uber_clone_13/widgets/drawer_widget.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -22,21 +23,31 @@ class _HomePageState extends State<HomePage> {
     Navigator.pushNamed(context, "/search");
   }
 
+  deslogar() {
+    final auth = FirebaseAuth.instance;
+    auth.signOut();
+    Navigator.pushNamedAndRemoveUntil(context, "/login", (_) => false);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
+        iconTheme: const IconThemeData(color: Colors.white),
         title: const Text(
           "Uber",
           style: TextStyle(color: Colors.white, fontSize: 30),
         ),
         backgroundColor: Colors.black,
       ),
+      drawer: DrawerWidget(
+        deslogar: deslogar,
+      ),
       body: Column(
         children: [
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.65,
+            height: MediaQuery.of(context).size.height * 0.70,
             child: GoogleMap(
               onMapCreated: onCreated,
               initialCameraPosition:
