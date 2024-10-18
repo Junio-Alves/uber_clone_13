@@ -10,8 +10,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final emailController = TextEditingController();
-  final senhaController = TextEditingController();
+  final emailController = TextEditingController(text: "test@gmail.com");
+  final senhaController = TextEditingController(text: "123456");
   final _formKey = GlobalKey<FormState>();
   cadastrar() {
     Navigator.pushNamed(context, "/cadastro");

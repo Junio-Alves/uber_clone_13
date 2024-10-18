@@ -1,15 +1,52 @@
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:uber_clone_13/widgets/popUp_widget.dart';
 
 class SearchPage extends StatefulWidget {
-  const SearchPage({super.key});
+  final Function(LatLng, LatLng) startTravel;
+  const SearchPage({super.key, required this.startTravel});
 
   @override
   State<SearchPage> createState() => _SearchPageState();
 }
 
 class _SearchPageState extends State<SearchPage> {
-  iniciarViagem() {
-    Navigator.pop(context);
+  LatLng? departure;
+  LatLng? destination;
+  final departureController =
+      TextEditingController(text: "Rua do Cajueiro,Santa Luzia,Parnaíba");
+  final destinationController =
+      TextEditingController(text: "Parnaíba Shopping");
+  Future getGeolocationFromAddress(
+    String departureAddress,
+    String destinationAddres,
+  ) async {
+    List<Location> locationsDeparture =
+        await locationFromAddress(departureAddress);
+    List<Location> locationsDestination =
+        await locationFromAddress(destinationAddres);
+    if (locationsDeparture.isNotEmpty && locationsDestination.isNotEmpty) {
+      departure = LatLng(locationsDeparture.first.latitude,
+          locationsDeparture.first.longitude);
+      destination = LatLng(locationsDestination.first.latitude,
+          locationsDestination.first.longitude);
+    } else {
+      if (mounted) {
+        popUpDialog(context, "Erro!", "Endereço não encontrado", null);
+      }
+    }
+  }
+
+  iniciarViagem() async {
+    await getGeolocationFromAddress(
+        departureController.text, destinationController.text);
+    if (departure != null && departure != null) {
+      widget.startTravel(departure!, destination!);
+      if (mounted) Navigator.pop(context);
+    } else {
+      if (mounted) popUpDialog(context, "Erro!", "Erro inesperado :(", null);
+    }
   }
 
   @override
@@ -42,12 +79,16 @@ class _SearchPageState extends State<SearchPage> {
                   "Partida",
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                 ),
-                TextFormField(),
+                TextFormField(
+                  controller: departureController,
+                ),
                 const Text(
                   "Chegada",
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                 ),
-                TextFormField(),
+                TextFormField(
+                  controller: destinationController,
+                ),
               ],
             ),
             SizedBox(

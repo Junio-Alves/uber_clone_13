@@ -10,8 +10,8 @@ class CadastroPage extends StatefulWidget {
 }
 
 class _CadastroPageState extends State<CadastroPage> {
-  final nomeController = TextEditingController(text: "Francisco Junio");
-  final emailController = TextEditingController(text: "juniophb2004@gmail.com");
+  final nomeController = TextEditingController(text: "user_test");
+  final emailController = TextEditingController(text: "test@gmail.com");
   final senhaController = TextEditingController(text: "123456");
   final _formKey = GlobalKey<FormState>();
 
