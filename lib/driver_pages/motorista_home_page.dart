@@ -119,49 +119,6 @@ class _DriverHomePageState extends State<DriverHomePage> {
       drawer: DrawerWidget(
         deslogar: signOut,
       ),
-      body: Column(
-        children: [
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.60,
-            child: GoogleMap(
-              onMapCreated: onCreated,
-              initialCameraPosition:
-                  CameraPosition(target: initialPosition, zoom: 15),
-              myLocationEnabled: true,
-              markers: markers,
-              polylines: polylines,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 20, bottom: 10),
-            child: Text(
-              "Bom dia,$userName",
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-            ),
-          ),
-          const Divider(),
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: TextFormField(
-              onTap: () => search(),
-              decoration: InputDecoration(
-                suffixIcon: const Icon(Icons.search),
-                hintText: "Para onde você quer ir?",
-                focusColor: Colors.black,
-                filled: true,
-                fillColor: Colors.grey.shade200,
-                focusedBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Colors.black),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ),
-          )
-        ],
-      ),
     );
   }
 }

@@ -22,19 +22,30 @@ class _SearchPageState extends State<SearchPage> {
     String departureAddress,
     String destinationAddres,
   ) async {
-    List<Location> locationsDeparture =
-        await locationFromAddress(departureAddress);
-    List<Location> locationsDestination =
-        await locationFromAddress(destinationAddres);
+    List<Location> locationsDeparture = [];
+    List<Location> locationsDestination = [];
+    try {
+      locationsDeparture = await locationFromAddress(departureAddress);
+    } catch (e) {
+      if (mounted) {
+        popUpDialog(
+            context, "Erro", "Endereço de partida não localizado!", null);
+      }
+    }
+    try {
+      locationsDestination = await locationFromAddress(destinationAddres);
+    } catch (e) {
+      if (mounted) {
+        popUpDialog(
+            context, "Erro", "Endereço de destino não localizado!", null);
+      }
+    }
+
     if (locationsDeparture.isNotEmpty && locationsDestination.isNotEmpty) {
       departure = LatLng(locationsDeparture.first.latitude,
           locationsDeparture.first.longitude);
       destination = LatLng(locationsDestination.first.latitude,
           locationsDestination.first.longitude);
-    } else {
-      if (mounted) {
-        popUpDialog(context, "Erro!", "Endereço não encontrado", null);
-      }
     }
   }
 
@@ -44,8 +55,6 @@ class _SearchPageState extends State<SearchPage> {
     if (departure != null && departure != null) {
       widget.startTravel(departure!, destination!);
       if (mounted) Navigator.pop(context);
-    } else {
-      if (mounted) popUpDialog(context, "Erro!", "Erro inesperado :(", null);
     }
   }
 
