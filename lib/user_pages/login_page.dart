@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:uber_clone_13/widgets/formField_widget.dart';
+import 'package:uber_clone_13/widgets/popUp_widget.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -29,7 +30,9 @@ class _LoginPageState extends State<LoginPage> {
           Navigator.pushReplacementNamed(context, "/home");
         }
       } catch (e) {
-        print(e.toString());
+        if (mounted) {
+          popUpDialog(context, "Erro no login!", e.toString(), null);
+        }
       }
     }
   }

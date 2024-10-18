@@ -1,15 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:uber_clone_13/widgets/formField_widget.dart';
+import 'package:uber_clone_13/widgets/popUp_widget.dart';
 
-class CadastroPage extends StatefulWidget {
-  const CadastroPage({super.key});
+class UserRegisterPage extends StatefulWidget {
+  const UserRegisterPage({super.key});
 
   @override
-  State<CadastroPage> createState() => _CadastroPageState();
+  State<UserRegisterPage> createState() => _UserRegisterPageState();
 }
 
-class _CadastroPageState extends State<CadastroPage> {
+class _UserRegisterPageState extends State<UserRegisterPage> {
   final nomeController = TextEditingController(text: "user_test");
   final emailController = TextEditingController(text: "test@gmail.com");
   final senhaController = TextEditingController(text: "123456");
@@ -19,7 +20,11 @@ class _CadastroPageState extends State<CadastroPage> {
     Navigator.pushNamed(context, "/login");
   }
 
-  cadastrar(String email, String password) async {
+  driverRegister() {
+    Navigator.pushNamed(context, "/cadastroMotorista");
+  }
+
+  cadastrarUsuario(String email, String password) async {
     if (_formKey.currentState!.validate()) {
       final auth = FirebaseAuth.instance;
       try {
@@ -31,7 +36,9 @@ class _CadastroPageState extends State<CadastroPage> {
           Navigator.pushNamedAndRemoveUntil(context, "/home", (_) => false);
         }
       } catch (e) {
-        print(e.toString());
+        if (mounted) {
+          popUpDialog(context, "Erro no Cadastro", e.toString(), null);
+        }
       }
     }
   }
@@ -123,8 +130,8 @@ class _CadastroPageState extends State<CadastroPage> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.black,
                   ),
-                  onPressed: () =>
-                      cadastrar(emailController.text, senhaController.text),
+                  onPressed: () => cadastrarUsuario(
+                      emailController.text, senhaController.text),
                   child: const Text(
                     "Cadastrar",
                     style: TextStyle(
@@ -137,6 +144,10 @@ class _CadastroPageState extends State<CadastroPage> {
               TextButton(
                 onPressed: () => login(),
                 child: const Text("Já tem conta? Faça o login!"),
+              ),
+              TextButton(
+                onPressed: () => driverRegister(),
+                child: const Text("Quer ser motorista? Faça o cadastro!"),
               )
             ],
           ),

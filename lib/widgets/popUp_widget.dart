@@ -11,8 +11,13 @@ Future popUpDialog(
     builder: (context) => AlertDialog(
       title: Text(title),
       content: content ??
-          Center(
-            child: Text(contentText),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Center(
+                child: Text(contentText),
+              ),
+            ],
           ),
       actions: [
         content != null
