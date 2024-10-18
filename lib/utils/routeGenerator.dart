@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:uber_clone_13/driver_pages/motorista_home_page.dart';
 import 'package:uber_clone_13/driver_pages/motorista_cadastro_page.dart';
 import 'package:uber_clone_13/user_pages/cadastro_page.dart';
 import 'package:uber_clone_13/user_pages/home_page.dart';
@@ -20,6 +21,10 @@ class RouteGenerator {
       case "/home":
         return MaterialPageRoute(
           builder: (context) => const HomePage(),
+        );
+      case "/driver_home":
+        return MaterialPageRoute(
+          builder: (context) => const DriverHomePage(),
         );
       case "/search":
         return MaterialPageRoute(

@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:uber_clone_13/models/user_model.dart';
 import 'package:uber_clone_13/widgets/formField_widget.dart';
 import 'package:uber_clone_13/widgets/popUp_widget.dart';
 
@@ -32,8 +34,10 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
           email: email,
           password: password,
         );
+        salvarDadosUsuario();
         if (mounted) {
-          Navigator.pushNamedAndRemoveUntil(context, "/home", (_) => false);
+          Navigator.pushNamedAndRemoveUntil(
+              context, "/driver_home", (_) => false);
         }
       } catch (e) {
         if (mounted) {
@@ -41,6 +45,18 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
         }
       }
     }
+  }
+
+  salvarDadosUsuario() {
+    final store = FirebaseFirestore.instance;
+    final auth = FirebaseAuth.instance;
+    final userId = auth.currentUser!.uid;
+    final user = Usuario(
+      nome: nomeController.text,
+      email: emailController.text,
+      profileUrl: "",
+    );
+    store.collection("usuarios").doc(userId).set(user.toMap());
   }
 
   @override

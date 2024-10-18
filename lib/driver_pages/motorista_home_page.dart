@@ -5,14 +5,14 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:uber_clone_13/widgets/drawer_widget.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class DriverHomePage extends StatefulWidget {
+  const DriverHomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<DriverHomePage> createState() => _DriverHomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _DriverHomePageState extends State<DriverHomePage> {
   //Brasilia
   LatLng initialPosition = const LatLng(-15.790255, -47.888944);
   GoogleMapController? _controller;
@@ -36,15 +36,15 @@ class _HomePageState extends State<HomePage> {
     Navigator.pushNamedAndRemoveUntil(context, "/login", (_) => false);
   }
 
-  getUserName() async {
+  getDriverName() async {
     final auth = FirebaseAuth.instance;
     final store = FirebaseFirestore.instance;
     final userId = auth.currentUser!.uid;
     DocumentSnapshot<Map<String, dynamic>> snapshot =
-        await store.collection("usuarios").doc(userId).get();
+        await store.collection("Motoristas").doc(userId).get();
     Map<String, dynamic> dadosUsuario = snapshot.data() as Map<String, dynamic>;
     setState(() {
-      userName = dadosUsuario["Nome"];
+      userName = dadosUsuario["Nome_Motorista"];
     });
   }
 
@@ -100,7 +100,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getUserCurrentPosition();
-      getUserName();
+      getDriverName();
     });
   }
 
@@ -111,7 +111,7 @@ class _HomePageState extends State<HomePage> {
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
         title: const Text(
-          "Uber",
+          "Uber Motorista",
           style: TextStyle(color: Colors.white, fontSize: 30),
         ),
         backgroundColor: Colors.black,

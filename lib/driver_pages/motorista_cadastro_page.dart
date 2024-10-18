@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:uber_clone_13/models/driver_model.dart';
 import 'package:uber_clone_13/widgets/formField_widget.dart';
 import 'package:uber_clone_13/widgets/popUp_widget.dart';
 
@@ -11,9 +13,11 @@ class CadastroDriverPage extends StatefulWidget {
 }
 
 class _CadastroDriverPageState extends State<CadastroDriverPage> {
-  final nomeController = TextEditingController(text: "user_test");
-  final emailController = TextEditingController(text: "test@gmail.com");
+  final nomeController = TextEditingController(text: "driver_test");
+  final emailController = TextEditingController(text: "driver_test@gmail.com");
   final senhaController = TextEditingController(text: "123456");
+  final carroController = TextEditingController(text: "Palio 2004");
+  final placaController = TextEditingController(text: "PCH-1234");
   final _formKey = GlobalKey<FormState>();
 
   login() {
@@ -28,8 +32,10 @@ class _CadastroDriverPageState extends State<CadastroDriverPage> {
           email: email,
           password: password,
         );
+        salvarDadosMotorista();
         if (mounted) {
-          Navigator.pushNamedAndRemoveUntil(context, "/home", (_) => false);
+          Navigator.pushNamedAndRemoveUntil(
+              context, "/driver_home", (_) => false);
         }
       } catch (e) {
         if (mounted) {
@@ -37,6 +43,20 @@ class _CadastroDriverPageState extends State<CadastroDriverPage> {
         }
       }
     }
+  }
+
+  salvarDadosMotorista() async {
+    final auth = FirebaseAuth.instance;
+    final store = FirebaseFirestore.instance;
+    final driveId = auth.currentUser!.uid;
+    final motorista = Motorista(
+      nome: nomeController.text,
+      email: emailController.text,
+      profileUrl: "",
+      carroModelo: carroController.text,
+      placa: placaController.text,
+    );
+    await store.collection("Motoristas").doc(driveId).set(motorista.toMap());
   }
 
   @override
@@ -105,6 +125,24 @@ class _CadastroDriverPageState extends State<CadastroDriverPage> {
                 },
               ),
               FormfieldWidget(
+                  controller: carroController,
+                  hintText: "Modelo do Veículo",
+                  validator: (senha) {
+                    if (senha == null || senha.isEmpty) {
+                      return "Digite o modelo do veículo!";
+                    }
+                    return null;
+                  }),
+              FormfieldWidget(
+                  controller: placaController,
+                  hintText: "Placa do Veículo",
+                  validator: (senha) {
+                    if (senha == null || senha.isEmpty) {
+                      return "Digite a placa do Veículo!";
+                    }
+                    return null;
+                  }),
+              FormfieldWidget(
                   controller: senhaController,
                   hintText: "Senha",
                   obscureText: true,
@@ -116,9 +154,6 @@ class _CadastroDriverPageState extends State<CadastroDriverPage> {
                     }
                     return null;
                   }),
-              const SizedBox(
-                height: 60,
-              ),
               SizedBox(
                 width: double.infinity,
                 height: 50,

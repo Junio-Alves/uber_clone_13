@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:uber_clone_13/widgets/formField_widget.dart';
@@ -26,9 +27,7 @@ class _LoginPageState extends State<LoginPage> {
           email: email,
           password: password,
         );
-        if (mounted) {
-          Navigator.pushReplacementNamed(context, "/home");
-        }
+        isUserOrIsDriver();
       } catch (e) {
         if (mounted) {
           popUpDialog(context, "Erro no login!", e.toString(), null);
@@ -37,10 +36,27 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  //Verifica se o usuario é um motorista ou usario, e redireciona para suas respectivas telas!
+  isUserOrIsDriver() async {
+    final auth = FirebaseAuth.instance;
+    final userId = auth.currentUser!.uid;
+    final store = FirebaseFirestore.instance;
+    DocumentSnapshot<Map<String, dynamic>> usuario =
+        await store.collection("usuarios").doc(userId).get();
+    if (usuario.data() != null) {
+      if (mounted) Navigator.pushReplacementNamed(context, "/home");
+    }
+    DocumentSnapshot<Map<String, dynamic>> motorista =
+        await store.collection("Motoristas").doc(userId).get();
+    if (motorista.data() != null) {
+      if (mounted) Navigator.pushReplacementNamed(context, "/driver_home");
+    }
+  }
+
   verificarLogin() {
     final auth = FirebaseAuth.instance;
     if (auth.currentUser != null) {
-      Navigator.pushReplacementNamed(context, "/home");
+      isUserOrIsDriver();
     }
   }
 
