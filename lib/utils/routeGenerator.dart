@@ -1,5 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:uber_clone_13/driver_pages/motorista_travel_page.dart';
 import 'package:uber_clone_13/driver_pages/motorista_home_page.dart';
 import 'package:uber_clone_13/driver_pages/motorista_cadastro_page.dart';
 import 'package:uber_clone_13/models/viagem_model.dart';
@@ -36,6 +37,12 @@ class RouteGenerator {
       case "/cadastroMotorista":
         return MaterialPageRoute(
           builder: (context) => const CadastroDriverPage(),
+        );
+      case "/travel_page":
+        return MaterialPageRoute(
+          builder: (context) => TravelPage(
+            viagem: settings.arguments as Viagem,
+          ),
         );
       default:
         return MaterialPageRoute(

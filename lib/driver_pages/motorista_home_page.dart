@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +6,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:uber_clone_13/models/viagem_model.dart';
 import 'package:uber_clone_13/widgets/drawer_widget.dart';
-import 'package:uber_clone_13/widgets/popUp_widget.dart';
 import 'package:uber_clone_13/widgets/viagem_widget.dart';
 
 class DriverHomePage extends StatefulWidget {
@@ -72,24 +70,6 @@ class _DriverHomePageState extends State<DriverHomePage> {
     }
   }
 
-  startTravel(LatLng departure, LatLng destination) {
-    Marker departureMarker = Marker(
-      markerId: const MarkerId("departure_marker"),
-      position: departure,
-    );
-    Marker destinationMarker = Marker(
-      markerId: const MarkerId("destination_marker"),
-      position: destination,
-    );
-    setState(() {
-      markers.addAll({
-        departureMarker,
-        destinationMarker,
-      });
-      createPolyline(departure, destination);
-    });
-  }
-
   createPolyline(LatLng departure, LatLng destination) {
     polylines.add(
       Polyline(
@@ -107,6 +87,14 @@ class _DriverHomePageState extends State<DriverHomePage> {
     stream.listen((dados) {
       controller.add(dados);
     });
+  }
+
+  startTravel(Viagem viagem) {
+    Navigator.pushReplacementNamed(
+      context,
+      "/travel_page",
+      arguments: viagem,
+    );
   }
 
   @override
@@ -155,14 +143,18 @@ class _DriverHomePageState extends State<DriverHomePage> {
                 final querySnapshot = snapshot.data;
                 List<Viagem> viagens = [];
                 for (final viagem in querySnapshot!.docs) {
-                  final data = viagem.data() as Map<String, dynamic>;
-                  viagens.add(Viagem.fromFireStore(data));
+                  //Verifica se a viagem está no modo pendente!
+                  if (viagem["status"] == "pending") {
+                    final data = viagem.data() as Map<String, dynamic>;
+                    viagens.add(Viagem.fromFireStore(data));
+                  }
                 }
                 return ListView.builder(
                   itemCount: viagens.length,
                   itemBuilder: (context, index) {
                     final viagem = viagens[index];
                     return ViagemWidget(
+                      onTap: () => startTravel(viagem),
                       departureAddress: viagem.departureAddress,
                       destinationAddress: viagem.destinationAddress,
                     );
