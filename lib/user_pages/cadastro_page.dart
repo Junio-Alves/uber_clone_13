@@ -36,8 +36,7 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
         );
         salvarDadosUsuario();
         if (mounted) {
-          Navigator.pushNamedAndRemoveUntil(
-              context, "/driver_home", (_) => false);
+          Navigator.pushNamedAndRemoveUntil(context, "/home", (_) => false);
         }
       } catch (e) {
         if (mounted) {
@@ -52,6 +51,7 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
     final auth = FirebaseAuth.instance;
     final userId = auth.currentUser!.uid;
     final user = Usuario(
+      userUid: userId,
       nome: nomeController.text,
       email: emailController.text,
       profileUrl: "",

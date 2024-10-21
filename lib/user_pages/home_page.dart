@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:uber_clone_13/models/user_model.dart';
+import 'package:uber_clone_13/models/viagem_model.dart';
 import 'package:uber_clone_13/widgets/drawer_widget.dart';
 
 class HomePage extends StatefulWidget {
@@ -20,14 +22,14 @@ class _HomePageState extends State<HomePage> {
   LatLng? driver;
   Set<Marker> markers = {};
   Set<Polyline> polylines = {};
-  String userName = "";
+  Usuario? usuario;
 
   onCreated(GoogleMapController controller) {
     _controller = controller;
   }
 
   search() {
-    Navigator.pushNamed(context, "/search", arguments: startTravel);
+    Navigator.pushNamed(context, "/search", arguments: createTravel);
   }
 
   signOut() {
@@ -36,7 +38,7 @@ class _HomePageState extends State<HomePage> {
     Navigator.pushNamedAndRemoveUntil(context, "/login", (_) => false);
   }
 
-  getUserName() async {
+  getUserData() async {
     final auth = FirebaseAuth.instance;
     final store = FirebaseFirestore.instance;
     final userId = auth.currentUser!.uid;
@@ -44,7 +46,12 @@ class _HomePageState extends State<HomePage> {
         await store.collection("usuarios").doc(userId).get();
     Map<String, dynamic> dadosUsuario = snapshot.data() as Map<String, dynamic>;
     setState(() {
-      userName = dadosUsuario["Nome"];
+      usuario = Usuario(
+        userUid: userId,
+        nome: dadosUsuario["Nome"],
+        email: dadosUsuario["Email"],
+        profileUrl: dadosUsuario["profileUrl"],
+      );
     });
   }
 
@@ -65,7 +72,20 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  startTravel(LatLng departure, LatLng destination) {
+  createTravel(Viagem viagem) {
+    startTravel(viagem);
+    setState(() {
+      createMarkers(viagem.departure, viagem.destination);
+      createPolyline(viagem.departure, viagem.destination);
+    });
+  }
+
+  startTravel(Viagem viagem) {
+    final store = FirebaseFirestore.instance;
+    store.collection("viagens").doc(usuario!.userUid).set(viagem.toMap());
+  }
+
+  createMarkers(LatLng departure, LatLng destination) {
     Marker departureMarker = Marker(
       markerId: const MarkerId("departure_marker"),
       position: departure,
@@ -74,12 +94,9 @@ class _HomePageState extends State<HomePage> {
       markerId: const MarkerId("destination_marker"),
       position: destination,
     );
-    setState(() {
-      markers.addAll({
-        departureMarker,
-        destinationMarker,
-      });
-      createPolyline(departure, destination);
+    markers.addAll({
+      departureMarker,
+      destinationMarker,
     });
   }
 
@@ -100,7 +117,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getUserCurrentPosition();
-      getUserName();
+      getUserData();
     });
   }
 
@@ -135,7 +152,7 @@ class _HomePageState extends State<HomePage> {
           Padding(
             padding: const EdgeInsets.only(top: 20, bottom: 10),
             child: Text(
-              "Bom dia,$userName",
+              "Bom dia,${usuario?.nome ?? ""}",
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
             ),
           ),

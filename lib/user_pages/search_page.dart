@@ -1,10 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:uber_clone_13/models/viagem_model.dart';
 import 'package:uber_clone_13/widgets/popUp_widget.dart';
 
 class SearchPage extends StatefulWidget {
-  final Function(LatLng, LatLng) startTravel;
+  final Function(Viagem) startTravel;
   const SearchPage({super.key, required this.startTravel});
 
   @override
@@ -53,7 +55,16 @@ class _SearchPageState extends State<SearchPage> {
     await getGeolocationFromAddress(
         departureController.text, destinationController.text);
     if (departure != null && departure != null) {
-      widget.startTravel(departure!, destination!);
+      final auth = FirebaseAuth.instance;
+      final viagem = Viagem(
+        userId: auth.currentUser!.uid,
+        departureAddress: departureController.text,
+        departure: departure!,
+        destinationAddress: destinationController.text,
+        destination: destination!,
+      );
+      print(viagem.toMap().toString());
+      widget.startTravel(viagem);
       if (mounted) Navigator.pop(context);
     }
   }

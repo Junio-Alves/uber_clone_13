@@ -1,15 +1,24 @@
+/*
+{
+  "driver_id": "driver123",
+  "latitude": -3.7405,
+  "longitude": -38.5235,
+  "status": "available" // ou "on_trip"
+}
+ */
 class Motorista {
   final String nome;
   final String email;
   final String profileUrl;
   final String carroModelo;
   final String placa;
-  Motorista(
-      {required this.nome,
-      required this.email,
-      required this.profileUrl,
-      required this.carroModelo,
-      required this.placa});
+  Motorista({
+    required this.nome,
+    required this.email,
+    required this.profileUrl,
+    required this.carroModelo,
+    required this.placa,
+  });
 
   Map<String, dynamic> toMap() {
     return {

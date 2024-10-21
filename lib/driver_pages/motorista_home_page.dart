@@ -1,9 +1,14 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:uber_clone_13/models/viagem_model.dart';
 import 'package:uber_clone_13/widgets/drawer_widget.dart';
+import 'package:uber_clone_13/widgets/popUp_widget.dart';
+import 'package:uber_clone_13/widgets/viagem_widget.dart';
 
 class DriverHomePage extends StatefulWidget {
   const DriverHomePage({super.key});
@@ -13,6 +18,8 @@ class DriverHomePage extends StatefulWidget {
 }
 
 class _DriverHomePageState extends State<DriverHomePage> {
+  final controller = StreamController<QuerySnapshot>.broadcast();
+  final store = FirebaseFirestore.instance;
   //Brasilia
   LatLng initialPosition = const LatLng(-15.790255, -47.888944);
   GoogleMapController? _controller;
@@ -38,7 +45,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
 
   getDriverName() async {
     final auth = FirebaseAuth.instance;
-    final store = FirebaseFirestore.instance;
+
     final userId = auth.currentUser!.uid;
     DocumentSnapshot<Map<String, dynamic>> snapshot =
         await store.collection("Motoristas").doc(userId).get();
@@ -95,8 +102,16 @@ class _DriverHomePageState extends State<DriverHomePage> {
     );
   }
 
+  adicionarListenerViagens() async {
+    final stream = store.collection("viagens").snapshots();
+    stream.listen((dados) {
+      controller.add(dados);
+    });
+  }
+
   @override
   void initState() {
+    adicionarListenerViagens();
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getUserCurrentPosition();
@@ -118,6 +133,44 @@ class _DriverHomePageState extends State<DriverHomePage> {
       ),
       drawer: DrawerWidget(
         deslogar: signOut,
+      ),
+      body: StreamBuilder(
+        stream: controller.stream,
+        builder: (context, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.none:
+            case ConnectionState.waiting:
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            case ConnectionState.active:
+            case ConnectionState.done:
+              if (snapshot.hasError) {
+                return const Expanded(
+                  child: Center(
+                    child: Text("Erro ao carregar base de dados!"),
+                  ),
+                );
+              } else {
+                final querySnapshot = snapshot.data;
+                List<Viagem> viagens = [];
+                for (final viagem in querySnapshot!.docs) {
+                  final data = viagem.data() as Map<String, dynamic>;
+                  viagens.add(Viagem.fromFireStore(data));
+                }
+                return ListView.builder(
+                  itemCount: viagens.length,
+                  itemBuilder: (context, index) {
+                    final viagem = viagens[index];
+                    return ViagemWidget(
+                      departureAddress: viagem.departureAddress,
+                      destinationAddress: viagem.destinationAddress,
+                    );
+                  },
+                );
+              }
+          }
+        },
       ),
     );
   }
