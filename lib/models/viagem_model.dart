@@ -17,8 +17,8 @@ class Viagem {
   final LatLng departure;
   final String destinationAddress;
   final LatLng destination;
-  final String? driverId;
-  final String status;
+  String? driverId;
+  String status;
   Viagem({
     required this.userId,
     required this.departureAddress,
@@ -42,7 +42,7 @@ class Viagem {
         "latitude": destination.latitude,
         "longitude": destination.longitude
       },
-      "driverId": null,
+      "driverId": driverId,
       "status": status,
     };
   }

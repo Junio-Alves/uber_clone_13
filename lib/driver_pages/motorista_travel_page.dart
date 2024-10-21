@@ -1,10 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:uber_clone_13/models/driver_model.dart';
 import 'package:uber_clone_13/models/viagem_model.dart';
 import 'package:uber_clone_13/utils/const.dart';
 import 'package:uber_clone_13/widgets/drawer_widget.dart';
+import 'package:uber_clone_13/widgets/viagem_widget.dart';
 
 class TravelPage extends StatefulWidget {
   final Viagem viagem;
@@ -18,6 +21,7 @@ class _TravelPageState extends State<TravelPage> {
   GoogleMapController? _controller;
   Set<Polyline> polylines = {};
   Set<Marker> markers = {};
+  final store = FirebaseFirestore.instance;
 
   signOut() {
     final auth = FirebaseAuth.instance;
@@ -76,6 +80,19 @@ class _TravelPageState extends State<TravelPage> {
     });
   }
 
+  cancelTravel() {
+    Navigator.pushNamed(context, "/driver_home");
+  }
+
+  startTravel() async {
+    final viagem = widget.viagem;
+    final motorista = await Motorista.getData();
+    //sei que é gambiarra e eu deveria ter feito getters e setters
+    viagem.driverId = motorista.driverUid;
+    viagem.status = "onTravel";
+    await store.collection("viagens").doc(viagem.userId).update(viagem.toMap());
+  }
+
   @override
   void initState() {
     super.initState();
@@ -102,7 +119,7 @@ class _TravelPageState extends State<TravelPage> {
       body: Column(
         children: [
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.60,
+            height: MediaQuery.of(context).size.height * 0.45,
             child: GoogleMap(
               onMapCreated: onCreated,
               initialCameraPosition:
@@ -112,32 +129,39 @@ class _TravelPageState extends State<TravelPage> {
               markers: markers,
             ),
           ),
-          const Divider(),
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: TextFormField(
-              decoration: InputDecoration(
-                suffixIcon: const Icon(Icons.search),
-                hintText: "Para onde você quer ir?",
-                focusColor: Colors.black,
-                filled: true,
-                fillColor: Colors.grey.shade200,
-                focusedBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Colors.black),
-                  borderRadius: BorderRadius.circular(10),
+          SingleChildScrollView(
+            child: Column(
+              children: [
+                const ListTile(
+                  leading: CircleAvatar(),
+                  title: Text("User_name"),
                 ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
+                const Divider(),
+                ViagemWidget(
+                    departureAddress: widget.viagem.departureAddress,
+                    destinationAddress: widget.viagem.destinationAddress,
+                    onTap: () {}),
+                Padding(
+                  padding: const EdgeInsets.only(left: 20, right: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextButton(
+                        onPressed: () => cancelTravel(),
+                        child: const Text("Cancelar"),
+                      ),
+                      ElevatedButton(
+                        onPressed: () => startTravel(),
+                        child: const Text("Iniciar"),
+                      ),
+                    ],
+                  ),
+                )
+              ],
             ),
           ),
-          ElevatedButton(
-              onPressed: () => Navigator.pushNamed(context, "/driver_home"),
-              child: const Text("Viagens"))
         ],
       ),
     );
-    ;
   }
 }

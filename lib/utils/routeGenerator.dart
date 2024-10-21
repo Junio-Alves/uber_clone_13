@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:uber_clone_13/driver_pages/motorista_travel_page.dart';
 import 'package:uber_clone_13/driver_pages/motorista_home_page.dart';
+import 'package:uber_clone_13/driver_pages/motorista_travel_page.dart';
+import 'package:uber_clone_13/driver_pages/motorista_list_travel_page.dart';
 import 'package:uber_clone_13/driver_pages/motorista_cadastro_page.dart';
 import 'package:uber_clone_13/models/viagem_model.dart';
 import 'package:uber_clone_13/user_pages/cadastro_page.dart';
@@ -23,6 +24,10 @@ class RouteGenerator {
       case "/home":
         return MaterialPageRoute(
           builder: (context) => const HomePage(),
+        );
+      case "/list_travels":
+        return MaterialPageRoute(
+          builder: (context) => const ListTravelsPage(),
         );
       case "/driver_home":
         return MaterialPageRoute(

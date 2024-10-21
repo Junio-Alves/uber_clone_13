@@ -50,11 +50,13 @@ class _CadastroDriverPageState extends State<CadastroDriverPage> {
     final store = FirebaseFirestore.instance;
     final driveId = auth.currentUser!.uid;
     final motorista = Motorista(
+      driverUid: driveId,
       nome: nomeController.text,
       email: emailController.text,
       profileUrl: "",
       carroModelo: carroController.text,
       placa: placaController.text,
+      driverLoc: null,
     );
     await store.collection("Motoristas").doc(driveId).set(motorista.toMap());
   }
