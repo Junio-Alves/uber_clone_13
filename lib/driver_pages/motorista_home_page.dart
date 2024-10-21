@@ -35,6 +35,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
   getUserCurrentPosition() async {
     try {
       Position position = await Geolocator.getCurrentPosition();
+
       setState(
         () {
           _controller!.animateCamera(

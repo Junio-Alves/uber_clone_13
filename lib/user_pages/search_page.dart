@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:uber_clone_13/models/viagem_model.dart';
+import 'package:uber_clone_13/utils/geolocator.dart';
 import 'package:uber_clone_13/widgets/popUp_widget.dart';
 
 class SearchPage extends StatefulWidget {
@@ -16,16 +17,18 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   LatLng? departure;
   LatLng? destination;
-  final departureController =
-      TextEditingController(text: "Rua do Cajueiro,Santa Luzia,Parnaíba");
+  final departureController = TextEditingController();
   final destinationController =
       TextEditingController(text: "Parnaíba Shopping");
+
+  //Recupera localização com base no endereço
   Future getGeolocationFromAddress(
     String departureAddress,
     String destinationAddres,
   ) async {
     List<Location> locationsDeparture = [];
     List<Location> locationsDestination = [];
+    //Tratamento de erro para o destino de saída!
     try {
       locationsDeparture = await locationFromAddress(departureAddress);
     } catch (e) {
@@ -34,6 +37,7 @@ class _SearchPageState extends State<SearchPage> {
             context, "Erro", "Endereço de partida não localizado!", null);
       }
     }
+    //Tratamento de erro para o destino de chega!
     try {
       locationsDestination = await locationFromAddress(destinationAddres);
     } catch (e) {
@@ -43,11 +47,33 @@ class _SearchPageState extends State<SearchPage> {
       }
     }
 
+    //Verifica se ambos não foram nulos.
     if (locationsDeparture.isNotEmpty && locationsDestination.isNotEmpty) {
       departure = LatLng(locationsDeparture.first.latitude,
           locationsDeparture.first.longitude);
       destination = LatLng(locationsDestination.first.latitude,
           locationsDestination.first.longitude);
+    }
+  }
+
+  getAddressFromGeolocation() async {
+    List<Placemark> locationsDeparture = [];
+    final departure = await Locator.getUserCurrentPosition();
+    try {
+      locationsDeparture = await placemarkFromCoordinates(
+          departure.latitude, departure.longitude);
+    } catch (e) {
+      if (mounted) {
+        popUpDialog(
+            context, "Erro", "Endereço de destino não localizado!", null);
+      }
+    }
+    if (locationsDeparture.isNotEmpty) {
+      Placemark place = locationsDeparture[0];
+      setState(() {
+        departureController.text =
+            "${place.street},${place.name},${place.subAdministrativeArea}";
+      });
     }
   }
 
@@ -67,6 +93,13 @@ class _SearchPageState extends State<SearchPage> {
       widget.startTravel(viagem);
       if (mounted) Navigator.pop(context);
     }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getAddressFromGeolocation();
   }
 
   @override

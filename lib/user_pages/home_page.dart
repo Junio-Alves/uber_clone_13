@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:uber_clone_13/models/user_model.dart';
 import 'package:uber_clone_13/models/viagem_model.dart';
+import 'package:uber_clone_13/utils/geolocator.dart';
 import 'package:uber_clone_13/widgets/drawer_widget.dart';
 
 class HomePage extends StatefulWidget {
@@ -56,20 +56,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   getUserCurrentPosition() async {
-    try {
-      Position position = await Geolocator.getCurrentPosition();
-      setState(
-        () {
-          _controller!.animateCamera(
-            CameraUpdate.newLatLng(
-              LatLng(position.latitude, position.longitude),
-            ),
-          );
-        },
-      );
-    } catch (e) {
-      print(e.toString());
-    }
+    final userPosition = await Locator.getUserCurrentPosition();
+    setState(() {
+      _controller!.animateCamera(CameraUpdate.newLatLng(userPosition));
+    });
   }
 
   createTravel(Viagem viagem) {

@@ -18,6 +18,7 @@ class Motorista {
   final String carroModelo;
   final String placa;
   LatLng? driverLoc;
+  String status;
   Motorista({
     required this.driverUid,
     required this.nome,
@@ -26,6 +27,7 @@ class Motorista {
     required this.carroModelo,
     required this.placa,
     required this.driverLoc,
+    this.status = "offline",
   });
 
   Map<String, dynamic> toMap() {
@@ -38,6 +40,7 @@ class Motorista {
       "Carro_Placa": placa,
       "latitude": driverLoc?.latitude,
       "longitude": driverLoc?.longitude,
+      "status": status,
     };
   }
 
@@ -50,6 +53,7 @@ class Motorista {
       carroModelo: data["Carro_Modelo"],
       placa: data["Carro_Placa"],
       driverLoc: null,
+      status: data["status"],
     );
   }
   static Future<Motorista> getData() async {
@@ -58,6 +62,8 @@ class Motorista {
     final userId = auth.currentUser!.uid;
     DocumentSnapshot<Map<String, dynamic>> snapshot =
         await store.collection("Motoristas").doc(userId).get();
-    return Motorista.fromFireStore(snapshot.data() as Map<String, dynamic>);
+    return Motorista.fromFireStore(
+      snapshot.data() as Map<String, dynamic>,
+    );
   }
 }

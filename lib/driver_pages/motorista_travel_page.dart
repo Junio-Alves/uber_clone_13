@@ -67,10 +67,12 @@ class _TravelPageState extends State<TravelPage> {
     Marker departureMarker = Marker(
       markerId: const MarkerId("departure_marker"),
       position: widget.viagem.departure,
+      infoWindow: const InfoWindow(title: "Departure"),
     );
     Marker destinationMarker = Marker(
       markerId: const MarkerId("destination_marker"),
       position: widget.viagem.destination,
+      infoWindow: const InfoWindow(title: "Destination"),
     );
     setState(() {
       markers.addAll({
@@ -80,8 +82,13 @@ class _TravelPageState extends State<TravelPage> {
     });
   }
 
-  cancelTravel() {
-    Navigator.pushNamed(context, "/driver_home");
+  cancelTravel() async {
+    final viagem = widget.viagem;
+    //sei que é gambiarra e eu deveria ter feito getters e setters
+    viagem.driverId = null;
+    viagem.status = "pending";
+    await store.collection("viagens").doc(viagem.userId).update(viagem.toMap());
+    if (mounted) Navigator.pushNamed(context, "/driver_home");
   }
 
   startTravel() async {
