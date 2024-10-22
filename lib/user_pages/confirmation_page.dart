@@ -25,10 +25,13 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
     _controller = controller;
   }
 
-  createTravel(Viagem viagem) {
+  createTravel(Viagem viagem) async {
     final store = FirebaseFirestore.instance;
     final auth = FirebaseAuth.instance;
-    store.collection("viagens").doc(auth.currentUser!.uid).set(viagem.toMap());
+    await store
+        .collection("viagens")
+        .doc(auth.currentUser!.uid)
+        .set(viagem.toMap());
   }
 
   confirmTravel() {

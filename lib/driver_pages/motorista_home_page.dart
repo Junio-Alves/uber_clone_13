@@ -63,7 +63,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
 
   addListenerDriverLocation() {
     LocationSettings locationSettings = const LocationSettings(
-        accuracy: LocationAccuracy.bestForNavigation, distanceFilter: 0);
+        accuracy: LocationAccuracy.bestForNavigation, distanceFilter: 10);
     positionStream =
         Geolocator.getPositionStream(locationSettings: locationSettings)
             .listen((Position position) {

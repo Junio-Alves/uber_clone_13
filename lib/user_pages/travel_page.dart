@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:uber_clone_13/models/user_model.dart';
 import 'package:uber_clone_13/models/viagem_model.dart';
@@ -30,6 +31,7 @@ class _UserTravelPageState extends State<UserTravelPage> {
   Usuario? usuario;
   bool isPending = true;
   bool isOnTravel = false;
+  LatLng? driverLocation;
 
   adicionarListenerViagem() {
     print(widget.viagem.userId);
@@ -83,7 +85,28 @@ class _UserTravelPageState extends State<UserTravelPage> {
     Navigator.pushReplacementNamed(context, "/home");
   }
 
-  onTravelAccepted(String driverId) {}
+  onTravelAccepted(String driverId) {
+    addListenerDriverLocation(driverId);
+  }
+
+  addListenerDriverLocation(String driverId) async {
+    store.collection("Motoristas").doc(driverId).snapshots().listen((data) {
+      final driveData = data.data() as Map<String, dynamic>;
+      driverLocation = LatLng(driveData["latitude"], driveData["longitude"]);
+      print(
+          "Driver Location:${driverLocation!.latitude},${driverLocation!.longitude}");
+      final driveMarker = Marker(
+        markerId: const MarkerId(
+          "Drive_Marker",
+        ),
+        position: driverLocation!,
+        infoWindow: const InfoWindow(title: "Motorista"),
+      );
+      setState(() {
+        markers.add(driveMarker);
+      });
+    });
+  }
 
   createMarkers(LatLng departure, LatLng destination) {
     Marker departureMarker = Marker(
@@ -164,6 +187,7 @@ class _UserTravelPageState extends State<UserTravelPage> {
                   if (viagem["status"] == "pending") {
                     return PendingTravelWidget(cancelTravel: cancelTravel);
                   } else {
+                    onTravelAccepted(viagem["driverId"]);
                     return const OntravelWidget();
                   }
               }
