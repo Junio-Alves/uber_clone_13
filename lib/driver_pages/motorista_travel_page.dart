@@ -94,7 +94,6 @@ class _DriveTravelPageState extends State<DriveTravelPage> {
   startTravel() async {
     final viagem = widget.viagem;
     final motorista = await Motorista.getData();
-    print(motorista.nome);
     //sei que é gambiarra e eu deveria ter feito getters e setters
     viagem.driverId = motorista.driverUid;
     viagem.status = "onTravel";

@@ -1,5 +1,9 @@
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:uber_clone_13/models/driver_model.dart';
 import 'package:uber_clone_13/utils/geolocator.dart';
@@ -14,11 +18,12 @@ class DriverHomePage extends StatefulWidget {
 
 class _DriverHomePageState extends State<DriverHomePage> {
   //Brasilia
-  LatLng initialPosition = const LatLng(-15.790255, -47.888944);
+  LatLng driverPosition = const LatLng(-15.790255, -47.888944);
   GoogleMapController? _controller;
   Set<Marker> markers = {};
   Set<Polyline> polylines = {};
   Motorista? driver;
+  StreamSubscription<Position>? positionStream;
 
   onCreated(GoogleMapController controller) {
     _controller = controller;
@@ -30,14 +35,6 @@ class _DriverHomePageState extends State<DriverHomePage> {
     Navigator.pushNamedAndRemoveUntil(context, "/login", (_) => false);
   }
 
-  getUserCurrentPosition() async {
-    LatLng userPosition = await Locator.getUserCurrentPosition();
-    setState(() {
-      _controller!.animateCamera(CameraUpdate.newLatLng(
-          LatLng(userPosition.latitude, userPosition.longitude)));
-    });
-  }
-
   openListTravel() {
     Navigator.pushNamed(context, "/list_travels");
   }
@@ -46,13 +43,51 @@ class _DriverHomePageState extends State<DriverHomePage> {
     driver = await Motorista.getData();
   }
 
+  updateDriveLocation(LatLng driverPosition) async {
+    final auth = FirebaseAuth.instance;
+    await FirebaseFirestore.instance
+        .collection("Motoristas")
+        .doc(auth.currentUser!.uid)
+        .update({
+      "latitude": driverPosition.latitude,
+      "longitude": driverPosition.longitude,
+    });
+    updateCamera(driverPosition);
+  }
+
+  updateCamera(LatLng driverPosition) {
+    setState(() {
+      _controller!.animateCamera(CameraUpdate.newLatLng(driverPosition));
+    });
+  }
+
+  addListenerDriverLocation() {
+    LocationSettings locationSettings = const LocationSettings(
+        accuracy: LocationAccuracy.bestForNavigation, distanceFilter: 0);
+    positionStream =
+        Geolocator.getPositionStream(locationSettings: locationSettings)
+            .listen((Position position) {
+      setState(() {
+        driverPosition = LatLng(position.latitude, position.longitude);
+        updateDriveLocation(driverPosition);
+      });
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      getUserCurrentPosition();
       getUserData();
+      addListenerDriverLocation();
     });
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    positionStream?.cancel();
   }
 
   @override
@@ -84,7 +119,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
             child: GoogleMap(
               onMapCreated: onCreated,
               initialCameraPosition:
-                  CameraPosition(target: initialPosition, zoom: 15),
+                  CameraPosition(target: driverPosition, zoom: 15),
               myLocationEnabled: true,
               markers: markers,
               polylines: polylines,

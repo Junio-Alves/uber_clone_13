@@ -66,7 +66,6 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     createMarkers();
     createPolyline();
