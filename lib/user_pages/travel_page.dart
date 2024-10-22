@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +8,7 @@ import 'package:uber_clone_13/models/user_model.dart';
 import 'package:uber_clone_13/models/viagem_model.dart';
 import 'package:uber_clone_13/utils/geolocator.dart';
 import 'package:uber_clone_13/widgets/drawer_widget.dart';
+import 'package:uber_clone_13/widgets/onTravel_widget.dart';
 import 'package:uber_clone_13/widgets/pending_travel_widget.dart';
 
 class UserTravelPage extends StatefulWidget {
@@ -17,10 +20,10 @@ class UserTravelPage extends StatefulWidget {
 }
 
 class _UserTravelPageState extends State<UserTravelPage> {
-  //Brasilia
   GoogleMapController? _controller;
   final textController = TextEditingController();
   final store = FirebaseFirestore.instance;
+  final controllerViagem = StreamController<DocumentSnapshot>.broadcast();
   LatLng? driver;
   Set<Marker> markers = {};
   Set<Polyline> polylines = {};
@@ -28,7 +31,17 @@ class _UserTravelPageState extends State<UserTravelPage> {
   bool isPending = true;
   bool isOnTravel = false;
 
+  adicionarListenerViagem() {
+    print(widget.viagem.userId);
+    final stream =
+        store.collection("viagens").doc(widget.viagem.userId).snapshots();
+    stream.listen((dados) {
+      controllerViagem.add(dados);
+    });
+  }
+
   onCreated(GoogleMapController controller) {
+    getUserCurrentPosition();
     _controller = controller;
   }
 
@@ -70,6 +83,8 @@ class _UserTravelPageState extends State<UserTravelPage> {
     Navigator.pushReplacementNamed(context, "/home");
   }
 
+  onTravelAccepted(String driverId) {}
+
   createMarkers(LatLng departure, LatLng destination) {
     Marker departureMarker = Marker(
       markerId: const MarkerId("departure_marker"),
@@ -101,8 +116,8 @@ class _UserTravelPageState extends State<UserTravelPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      getUserCurrentPosition();
       getUserData();
+      adicionarListenerViagem();
     });
   }
 
@@ -133,7 +148,27 @@ class _UserTravelPageState extends State<UserTravelPage> {
               polylines: polylines,
             ),
           ),
-          PendingTravelWidget(cancelTravel: cancelTravel),
+          StreamBuilder(
+            stream: controllerViagem.stream,
+            builder: (context, snapshot) {
+              switch (snapshot.connectionState) {
+                case (ConnectionState.none):
+                case (ConnectionState.waiting):
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                case (ConnectionState.active):
+                case (ConnectionState.done):
+                  final viagem = snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (viagem["status"] == "pending") {
+                    return PendingTravelWidget(cancelTravel: cancelTravel);
+                  } else {
+                    return const OntravelWidget();
+                  }
+              }
+            },
+          )
           //default
         ],
       ),

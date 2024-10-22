@@ -10,6 +10,8 @@ class OntravelWidget extends StatefulWidget {
 class _OntravelWidgetState extends State<OntravelWidget> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return const Column(
+      children: [Text("Viagem aceita!")],
+    );
   }
 }

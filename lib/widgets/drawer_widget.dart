@@ -34,7 +34,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
           ),
           ListTile(
             title: const Text("Deslogar"),
-            onTap: () => signOut,
+            onTap: () => signOut(),
           ),
         ],
       ),
