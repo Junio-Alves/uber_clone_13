@@ -91,7 +91,7 @@ class _ListTravelsPageState extends State<ListTravelsPage> {
   startTravel(Viagem viagem) {
     Navigator.pushReplacementNamed(
       context,
-      "/travel_page",
+      "/driver_travel_page",
       arguments: viagem,
     );
   }

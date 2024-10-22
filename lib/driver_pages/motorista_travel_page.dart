@@ -9,15 +9,15 @@ import 'package:uber_clone_13/utils/const.dart';
 import 'package:uber_clone_13/widgets/drawer_widget.dart';
 import 'package:uber_clone_13/widgets/viagem_widget.dart';
 
-class TravelPage extends StatefulWidget {
+class DriveTravelPage extends StatefulWidget {
   final Viagem viagem;
-  const TravelPage({super.key, required this.viagem});
+  const DriveTravelPage({super.key, required this.viagem});
 
   @override
-  State<TravelPage> createState() => _TravelPageState();
+  State<DriveTravelPage> createState() => _DriveTravelPageState();
 }
 
-class _TravelPageState extends State<TravelPage> {
+class _DriveTravelPageState extends State<DriveTravelPage> {
   GoogleMapController? _controller;
   Set<Polyline> polylines = {};
   Set<Marker> markers = {};
@@ -120,9 +120,7 @@ class _TravelPageState extends State<TravelPage> {
         ),
         backgroundColor: Colors.black,
       ),
-      drawer: DrawerWidget(
-        deslogar: signOut,
-      ),
+      drawer: const DrawerWidget(),
       body: Column(
         children: [
           SizedBox(

@@ -1,8 +1,19 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class DrawerWidget extends StatelessWidget {
-  final VoidCallback deslogar;
-  const DrawerWidget({super.key, required this.deslogar});
+class DrawerWidget extends StatefulWidget {
+  const DrawerWidget({super.key});
+
+  @override
+  State<DrawerWidget> createState() => _DrawerWidgetState();
+}
+
+class _DrawerWidgetState extends State<DrawerWidget> {
+  signOut() {
+    final auth = FirebaseAuth.instance;
+    auth.signOut();
+    Navigator.pushNamedAndRemoveUntil(context, "/login", (_) => false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +34,7 @@ class DrawerWidget extends StatelessWidget {
           ),
           ListTile(
             title: const Text("Deslogar"),
-            onTap: () => deslogar(),
+            onTap: () => signOut,
           ),
         ],
       ),

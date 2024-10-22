@@ -1,10 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:uber_clone_13/models/driver_model.dart';
-import 'package:uber_clone_13/models/user_model.dart';
+import 'package:uber_clone_13/utils/geolocator.dart';
 import 'package:uber_clone_13/widgets/drawer_widget.dart';
 
 class DriverHomePage extends StatefulWidget {
@@ -33,21 +31,11 @@ class _DriverHomePageState extends State<DriverHomePage> {
   }
 
   getUserCurrentPosition() async {
-    try {
-      Position position = await Geolocator.getCurrentPosition();
-
-      setState(
-        () {
-          _controller!.animateCamera(
-            CameraUpdate.newLatLng(
-              LatLng(position.latitude, position.longitude),
-            ),
-          );
-        },
-      );
-    } catch (e) {
-      print(e.toString());
-    }
+    LatLng userPosition = await Locator.getUserCurrentPosition();
+    setState(() {
+      _controller!.animateCamera(CameraUpdate.newLatLng(
+          LatLng(userPosition.latitude, userPosition.longitude)));
+    });
   }
 
   openListTravel() {
@@ -55,14 +43,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
   }
 
   getUserData() async {
-    final auth = FirebaseAuth.instance;
-    final store = FirebaseFirestore.instance;
-    final userId = auth.currentUser!.uid;
-    DocumentSnapshot<Map<String, dynamic>> snapshot =
-        await store.collection("Motoristas").doc(userId).get();
-    setState(() {
-      driver = Motorista.fromFireStore(snapshot.data() as Map<String, dynamic>);
-    });
+    driver = await Motorista.getData();
   }
 
   @override
@@ -95,9 +76,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
-      drawer: DrawerWidget(
-        deslogar: signOut,
-      ),
+      drawer: const DrawerWidget(),
       body: Column(
         children: [
           SizedBox(

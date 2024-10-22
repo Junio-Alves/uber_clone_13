@@ -7,8 +7,7 @@ import 'package:uber_clone_13/utils/geolocator.dart';
 import 'package:uber_clone_13/widgets/popUp_widget.dart';
 
 class SearchPage extends StatefulWidget {
-  final Function(Viagem) startTravel;
-  const SearchPage({super.key, required this.startTravel});
+  const SearchPage({super.key});
 
   @override
   State<SearchPage> createState() => _SearchPageState();
@@ -89,9 +88,14 @@ class _SearchPageState extends State<SearchPage> {
         destinationAddress: destinationController.text,
         destination: destination!,
       );
-      print(viagem.toMap().toString());
-      widget.startTravel(viagem);
-      if (mounted) Navigator.pop(context);
+
+      if (mounted) {
+        Navigator.pushReplacementNamed(
+          context,
+          "/user_travel_confirmation_page",
+          arguments: viagem,
+        );
+      }
     }
   }
 

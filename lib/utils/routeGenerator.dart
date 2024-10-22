@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:uber_clone_13/driver_pages/motorista_home_page.dart';
 import 'package:uber_clone_13/driver_pages/motorista_travel_page.dart';
@@ -6,9 +5,12 @@ import 'package:uber_clone_13/driver_pages/motorista_list_travel_page.dart';
 import 'package:uber_clone_13/driver_pages/motorista_cadastro_page.dart';
 import 'package:uber_clone_13/models/viagem_model.dart';
 import 'package:uber_clone_13/user_pages/cadastro_page.dart';
+import 'package:uber_clone_13/user_pages/confirmation_page.dart';
 import 'package:uber_clone_13/user_pages/home_page.dart';
 import 'package:uber_clone_13/user_pages/login_page.dart';
 import 'package:uber_clone_13/user_pages/search_page.dart';
+import 'package:uber_clone_13/user_pages/travel_page.dart';
+import 'package:uber_clone_13/user_pages/unknown_page.dart';
 
 class RouteGenerator {
   static Route<dynamic>? generate(RouteSettings settings) {
@@ -23,6 +25,7 @@ class RouteGenerator {
         );
       case "/home":
         return MaterialPageRoute(
+          //Como home é chamado em outro locais, o argumento pode ser nulo, assim, sendo necessario a verificação.
           builder: (context) => const HomePage(),
         );
       case "/list_travels":
@@ -35,23 +38,33 @@ class RouteGenerator {
         );
       case "/search":
         return MaterialPageRoute(
-          builder: (context) => SearchPage(
-            startTravel: settings.arguments as Function(Viagem),
-          ),
+          builder: (context) => const SearchPage(),
         );
       case "/cadastroMotorista":
         return MaterialPageRoute(
           builder: (context) => const CadastroDriverPage(),
         );
-      case "/travel_page":
+      case "/driver_travel_page":
         return MaterialPageRoute(
-          builder: (context) => TravelPage(
+          builder: (context) => DriveTravelPage(
+            viagem: settings.arguments as Viagem,
+          ),
+        );
+      case "/user_travel_page":
+        return MaterialPageRoute(
+          builder: (context) => UserTravelPage(
+            viagem: settings.arguments as Viagem,
+          ),
+        );
+      case "/user_travel_confirmation_page":
+        return MaterialPageRoute(
+          builder: (context) => ConfirmationPage(
             viagem: settings.arguments as Viagem,
           ),
         );
       default:
         return MaterialPageRoute(
-          builder: (context) => const UserRegisterPage(),
+          builder: (context) => const UnknownPage(),
         );
     }
   }
