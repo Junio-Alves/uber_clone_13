@@ -56,12 +56,10 @@ class Motorista {
       status: data["status"],
     );
   }
-  static Future<Motorista> getData() async {
-    final auth = FirebaseAuth.instance;
+  static Future<Motorista> getData(String driverId) async {
     final store = FirebaseFirestore.instance;
-    final userId = auth.currentUser!.uid;
     DocumentSnapshot<Map<String, dynamic>> snapshot =
-        await store.collection("Motoristas").doc(userId).get();
+        await store.collection("Motoristas").doc(driverId).get();
     return Motorista.fromFireStore(
       snapshot.data() as Map<String, dynamic>,
     );

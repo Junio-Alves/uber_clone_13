@@ -1,9 +1,7 @@
 import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:uber_clone_13/models/user_model.dart';
 import 'package:uber_clone_13/models/viagem_model.dart';
@@ -25,12 +23,10 @@ class _UserTravelPageState extends State<UserTravelPage> {
   final textController = TextEditingController();
   final store = FirebaseFirestore.instance;
   final controllerViagem = StreamController<DocumentSnapshot>.broadcast();
-  LatLng? driver;
+  StreamSubscription<DocumentSnapshot>? driverLocationController;
   Set<Marker> markers = {};
   Set<Polyline> polylines = {};
   Usuario? usuario;
-  bool isPending = true;
-  bool isOnTravel = false;
   LatLng? driverLocation;
 
   adicionarListenerViagem() {
@@ -90,11 +86,10 @@ class _UserTravelPageState extends State<UserTravelPage> {
   }
 
   addListenerDriverLocation(String driverId) async {
-    store.collection("Motoristas").doc(driverId).snapshots().listen((data) {
+    driverLocationController =
+        store.collection("Motoristas").doc(driverId).snapshots().listen((data) {
       final driveData = data.data() as Map<String, dynamic>;
       driverLocation = LatLng(driveData["latitude"], driveData["longitude"]);
-      print(
-          "Driver Location:${driverLocation!.latitude},${driverLocation!.longitude}");
       final driveMarker = Marker(
         markerId: const MarkerId(
           "Drive_Marker",
@@ -145,6 +140,13 @@ class _UserTravelPageState extends State<UserTravelPage> {
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    driverLocationController!.cancel();
+  }
+
+  @override
   Widget build(BuildContext context) {
     LatLng initialPosition = widget.viagem.departure;
     return Scaffold(
@@ -188,7 +190,7 @@ class _UserTravelPageState extends State<UserTravelPage> {
                     return PendingTravelWidget(cancelTravel: cancelTravel);
                   } else {
                     onTravelAccepted(viagem["driverId"]);
-                    return const OntravelWidget();
+                    return OntravelWidget(driverId: viagem["driverId"]);
                   }
               }
             },

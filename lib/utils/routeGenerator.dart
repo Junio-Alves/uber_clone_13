@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:uber_clone_13/driver_pages/motorista_home_page.dart';
-import 'package:uber_clone_13/driver_pages/motorista_travel_page.dart';
+import 'package:uber_clone_13/driver_pages/motorista_confirmation_travel_page.dart';
 import 'package:uber_clone_13/driver_pages/motorista_list_travel_page.dart';
 import 'package:uber_clone_13/driver_pages/motorista_cadastro_page.dart';
 import 'package:uber_clone_13/models/viagem_model.dart';

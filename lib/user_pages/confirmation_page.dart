@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:uber_clone_13/models/viagem_model.dart';
-import 'package:uber_clone_13/widgets/drawer_widget.dart';
 import 'package:uber_clone_13/widgets/viagem_widget.dart';
 
 class ConfirmationPage extends StatefulWidget {
@@ -91,7 +90,7 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
       body: Column(
         children: [
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.50,
+            height: MediaQuery.of(context).size.height * 0.40,
             child: GoogleMap(
               onMapCreated: onCreated,
               initialCameraPosition:
@@ -102,7 +101,7 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
             ),
           ),
           Padding(
-            padding: EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

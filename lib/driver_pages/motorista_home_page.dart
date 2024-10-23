@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:uber_clone_13/models/driver_model.dart';
-import 'package:uber_clone_13/utils/geolocator.dart';
 import 'package:uber_clone_13/widgets/drawer_widget.dart';
 
 class DriverHomePage extends StatefulWidget {
@@ -40,7 +39,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
   }
 
   getUserData() async {
-    driver = await Motorista.getData();
+    final driverId = FirebaseAuth.instance.currentUser!.uid;
+    driver = await Motorista.getData(driverId);
   }
 
   updateDriveLocation(LatLng driverPosition) async {
@@ -85,7 +85,6 @@ class _DriverHomePageState extends State<DriverHomePage> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     positionStream?.cancel();
   }
