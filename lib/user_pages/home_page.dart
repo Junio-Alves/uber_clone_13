@@ -19,7 +19,7 @@ class _HomePageState extends State<HomePage> {
   final textController = TextEditingController();
   Set<Marker> markers = {};
   Set<Polyline> polylines = {};
-  Usuario? usuario;
+  Profile? usuario;
 
   onCreated(GoogleMapController controller) {
     _controller = controller;
@@ -31,7 +31,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   getUserData() async {
-    usuario = await Usuario.getUserData();
+    usuario = await Profile.getUserData();
     setState(() {});
   }
 

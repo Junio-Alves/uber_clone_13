@@ -7,10 +7,9 @@
 }
  */
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class Motorista {
+class Driver {
   final String driverUid;
   final String nome;
   final String email;
@@ -19,7 +18,7 @@ class Motorista {
   final String placa;
   LatLng? driverLoc;
   String status;
-  Motorista({
+  Driver({
     required this.driverUid,
     required this.nome,
     required this.email,
@@ -44,8 +43,8 @@ class Motorista {
     };
   }
 
-  factory Motorista.fromFireStore(Map<String, dynamic> data) {
-    return Motorista(
+  factory Driver.fromFireStore(Map<String, dynamic> data) {
+    return Driver(
       driverUid: data["driverUid"],
       nome: data["Nome_Motorista"],
       email: data["Email"],
@@ -56,11 +55,11 @@ class Motorista {
       status: data["status"],
     );
   }
-  static Future<Motorista> getData(String driverId) async {
+  static Future<Driver> getData(String driverId) async {
     final store = FirebaseFirestore.instance;
     DocumentSnapshot<Map<String, dynamic>> snapshot =
         await store.collection("Motoristas").doc(driverId).get();
-    return Motorista.fromFireStore(
+    return Driver.fromFireStore(
       snapshot.data() as Map<String, dynamic>,
     );
   }

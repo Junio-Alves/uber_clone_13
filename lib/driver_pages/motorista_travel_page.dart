@@ -1,21 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:uber_clone_13/models/viagem_model.dart';
 import 'package:uber_clone_13/provider/driver_location_provider.dart';
+import 'package:uber_clone_13/provider/viagem_provider.dart';
 import 'package:uber_clone_13/widgets/drawer_widget.dart';
 
 class MotoristaTravelPage extends StatefulWidget {
   final Set<Polyline> polylines;
   final Set<Marker> markers;
-  final Viagem viagem;
   final LatLng initialPosition;
   const MotoristaTravelPage({
     super.key,
     required this.polylines,
     required this.markers,
-    required this.viagem,
     required this.initialPosition,
   });
 
@@ -41,19 +39,6 @@ class _MotoristaTravelPageState extends State<MotoristaTravelPage> {
     driverLocationProvider(context).stopListenerDriverLocation();
   }
 
-  teste() {
-    double distance = Geolocator.distanceBetween(
-      widget.viagem.departure.latitude,
-      widget.viagem.departure.longitude,
-      widget.viagem.destination.latitude,
-      widget.viagem.destination.longitude,
-    );
-    print(distance);
-    setState(() {
-      distancia = distance;
-    });
-  }
-
   @override
   void dispose() {
     // TODO: implement dispose
@@ -63,6 +48,8 @@ class _MotoristaTravelPageState extends State<MotoristaTravelPage> {
 
   @override
   Widget build(BuildContext context) {
+    ViagemProvider viagemProvider = Provider.of<ViagemProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -87,9 +74,6 @@ class _MotoristaTravelPageState extends State<MotoristaTravelPage> {
               markers: widget.markers,
             ),
           ),
-          ElevatedButton(
-              onPressed: () => teste(), child: const Text("distancia")),
-          Text(distancia.toString()),
         ],
       ),
     );

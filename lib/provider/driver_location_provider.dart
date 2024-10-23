@@ -9,6 +9,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 class DriverLocationProvider extends ChangeNotifier {
   StreamSubscription<Position>? positionStream;
   LatLng driverPosition = const LatLng(-15.790255, -47.888944);
+  late double driverDistanceDeparture;
+  late double driverDistanceDestination;
 
   addListenerDriverLocation(GoogleMapController controller) {
     LocationSettings locationSettings = const LocationSettings(

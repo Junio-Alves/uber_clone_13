@@ -10,10 +10,10 @@ class OntravelWidget extends StatefulWidget {
 }
 
 class _OntravelWidgetState extends State<OntravelWidget> {
-  Motorista? driver;
+  Driver? driver;
   bool isLoading = true;
   getDriveData() async {
-    driver = await Motorista.getData(widget.driverId);
+    driver = await Driver.getData(widget.driverId);
     setState(() {
       isLoading = false;
     });

@@ -4,7 +4,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:uber_clone_13/models/viagem_model.dart';
+import 'package:uber_clone_13/provider/viagem_provider.dart';
 import 'package:uber_clone_13/widgets/viagem_widget.dart';
 
 class ListTravelsPage extends StatefulWidget {
@@ -24,7 +26,17 @@ class _ListTravelsPageState extends State<ListTravelsPage> {
   LatLng? driver;
   Set<Marker> markers = {};
   Set<Polyline> polylines = {};
-  String userName = "";
+  late ViagemProvider viagemProvider;
+
+  @override
+  void initState() {
+    adicionarListenerViagens();
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getUserCurrentPosition();
+      viagemProvider = Provider.of<ViagemProvider>(context);
+    });
+  }
 
   onCreated(GoogleMapController controller) {
     _controller = controller;
@@ -32,24 +44,6 @@ class _ListTravelsPageState extends State<ListTravelsPage> {
 
   search() {
     Navigator.pushNamed(context, "/search", arguments: startTravel);
-  }
-
-  signOut() {
-    final auth = FirebaseAuth.instance;
-    auth.signOut();
-    Navigator.pushNamedAndRemoveUntil(context, "/login", (_) => false);
-  }
-
-  getDriverName() async {
-    final auth = FirebaseAuth.instance;
-
-    final userId = auth.currentUser!.uid;
-    DocumentSnapshot<Map<String, dynamic>> snapshot =
-        await store.collection("Motoristas").doc(userId).get();
-    Map<String, dynamic> dadosUsuario = snapshot.data() as Map<String, dynamic>;
-    setState(() {
-      userName = dadosUsuario["Nome_Motorista"];
-    });
   }
 
   getUserCurrentPosition() async {
@@ -94,16 +88,6 @@ class _ListTravelsPageState extends State<ListTravelsPage> {
       "/driver_travel_page",
       arguments: viagem,
     );
-  }
-
-  @override
-  void initState() {
-    adicionarListenerViagens();
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      getUserCurrentPosition();
-      getDriverName();
-    });
   }
 
   @override

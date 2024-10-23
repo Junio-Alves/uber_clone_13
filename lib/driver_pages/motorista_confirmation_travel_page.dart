@@ -3,9 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:uber_clone_13/driver_pages/motorista_travel_page.dart';
 import 'package:uber_clone_13/models/driver_model.dart';
 import 'package:uber_clone_13/models/viagem_model.dart';
+import 'package:uber_clone_13/provider/viagem_provider.dart';
 import 'package:uber_clone_13/utils/const.dart';
 import 'package:uber_clone_13/widgets/drawer_widget.dart';
 import 'package:uber_clone_13/widgets/viagem_widget.dart';
@@ -22,12 +24,17 @@ class _DriveTravelPageState extends State<DriveTravelPage> {
   GoogleMapController? _controller;
   Set<Polyline> polylines = {};
   Set<Marker> markers = {};
+  late ViagemProvider viagemProvider;
   final store = FirebaseFirestore.instance;
 
-  signOut() {
-    final auth = FirebaseAuth.instance;
-    auth.signOut();
-    Navigator.pushNamedAndRemoveUntil(context, "/login", (_) => false);
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      viagemProvider = Provider.of<ViagemProvider>(context);
+    });
+    super.initState();
+    getPolylineRoutePoints();
+    createMarkers();
   }
 
   onCreated(GoogleMapController controller) {
@@ -104,7 +111,7 @@ class _DriveTravelPageState extends State<DriveTravelPage> {
   startTravel() async {
     final viagem = widget.viagem;
     final driverId = FirebaseAuth.instance.currentUser!.uid;
-    final motorista = await Motorista.getData(driverId);
+    final motorista = await Driver.getData(driverId);
     //sei que é gambiarra e eu deveria ter feito getters e setters
     viagem.driverId = motorista.driverUid;
     viagem.status = "onTravel";
@@ -116,18 +123,10 @@ class _DriveTravelPageState extends State<DriveTravelPage> {
           builder: (context) => MotoristaTravelPage(
               polylines: polylines,
               markers: markers,
-              viagem: viagem,
               initialPosition: widget.viagem.departure),
         ),
       );
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    getPolylineRoutePoints();
-    createMarkers();
   }
 
   @override

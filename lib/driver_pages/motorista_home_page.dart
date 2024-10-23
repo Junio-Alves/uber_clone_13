@@ -23,7 +23,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
   GoogleMapController? _controller;
   Set<Marker> markers = {};
   Set<Polyline> polylines = {};
-  Motorista? driver;
+  Driver? driver;
   final driverLocationProvider = Provider.of<DriverLocationProvider>;
 
   onCreated(GoogleMapController controller) {
@@ -43,7 +43,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
 
   getUserData() async {
     final driverId = FirebaseAuth.instance.currentUser!.uid;
-    driver = await Motorista.getData(driverId);
+    driver = await Driver.getData(driverId);
   }
 
   updateCamera(LatLng driverPosition) {
@@ -58,7 +58,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
   }
 
   stopListenerDriverLocation() {
-    Provider.of<DriverLocationProvider>(context).stopListenerDriverLocation();
+    Provider.of<DriverLocationProvider>(context, listen: false)
+        .stopListenerDriverLocation();
   }
 
   @override

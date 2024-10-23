@@ -26,7 +26,7 @@ class _UserTravelPageState extends State<UserTravelPage> {
   StreamSubscription<DocumentSnapshot>? driverLocationController;
   Set<Marker> markers = {};
   Set<Polyline> polylines = {};
-  Usuario? usuario;
+  Profile? usuario;
   LatLng? driverLocation;
   bool isListening = false;
 
@@ -55,7 +55,7 @@ class _UserTravelPageState extends State<UserTravelPage> {
   }
 
   getUserData() async {
-    usuario = await Usuario.getUserData();
+    usuario = await Profile.getUserData();
   }
 
   getUserCurrentPosition() async {

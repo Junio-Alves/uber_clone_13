@@ -49,7 +49,7 @@ class _CadastroDriverPageState extends State<CadastroDriverPage> {
     final auth = FirebaseAuth.instance;
     final store = FirebaseFirestore.instance;
     final driveId = auth.currentUser!.uid;
-    final motorista = Motorista(
+    final motorista = Driver(
       driverUid: driveId,
       nome: nomeController.text,
       email: emailController.text,

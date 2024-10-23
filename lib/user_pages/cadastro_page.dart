@@ -50,7 +50,7 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
     final store = FirebaseFirestore.instance;
     final auth = FirebaseAuth.instance;
     final userId = auth.currentUser!.uid;
-    final user = Usuario(
+    final user = Profile(
       userUid: userId,
       nome: nomeController.text,
       email: emailController.text,
