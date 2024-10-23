@@ -28,6 +28,7 @@ class _UserTravelPageState extends State<UserTravelPage> {
   Set<Polyline> polylines = {};
   Usuario? usuario;
   LatLng? driverLocation;
+  bool isListening = false;
 
   adicionarListenerViagem() {
     print(widget.viagem.userId);
@@ -86,21 +87,31 @@ class _UserTravelPageState extends State<UserTravelPage> {
   }
 
   addListenerDriverLocation(String driverId) async {
-    driverLocationController =
-        store.collection("Motoristas").doc(driverId).snapshots().listen((data) {
-      final driveData = data.data() as Map<String, dynamic>;
-      driverLocation = LatLng(driveData["latitude"], driveData["longitude"]);
-      final driveMarker = Marker(
-        markerId: const MarkerId(
-          "Drive_Marker",
-        ),
-        position: driverLocation!,
-        infoWindow: const InfoWindow(title: "Motorista"),
-      );
-      setState(() {
-        markers.add(driveMarker);
+    if (isListening == false) {
+      isListening = true;
+      driverLocationController = store
+          .collection("Motoristas")
+          .doc(driverId)
+          .snapshots()
+          .listen((data) async {
+        final driveData = data.data() as Map<String, dynamic>;
+        driverLocation = LatLng(driveData["latitude"], driveData["longitude"]);
+        //Cria marcador do motorista
+        final driveMarker = Marker(
+          markerId: const MarkerId(
+            "Drive_Marker",
+          ),
+          icon: await BitmapDescriptor.asset(
+              const ImageConfiguration(size: Size(48, 48)),
+              "assets/images/driver_position_icon.png"),
+          position: driverLocation!,
+          infoWindow: const InfoWindow(title: "Motorista"),
+        );
+        setState(() {
+          markers.add(driveMarker);
+        });
       });
-    });
+    }
   }
 
   createMarkers(LatLng departure, LatLng destination) {
@@ -144,6 +155,7 @@ class _UserTravelPageState extends State<UserTravelPage> {
     // TODO: implement dispose
     super.dispose();
     driverLocationController!.cancel();
+    isListening = false;
   }
 
   @override

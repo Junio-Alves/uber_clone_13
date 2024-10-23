@@ -5,7 +5,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:uber_clone_13/models/driver_model.dart';
+import 'package:uber_clone_13/provider/driver_location_provider.dart';
 import 'package:uber_clone_13/widgets/drawer_widget.dart';
 
 class DriverHomePage extends StatefulWidget {
@@ -17,15 +19,16 @@ class DriverHomePage extends StatefulWidget {
 
 class _DriverHomePageState extends State<DriverHomePage> {
   //Brasilia
-  LatLng driverPosition = const LatLng(-15.790255, -47.888944);
+
   GoogleMapController? _controller;
   Set<Marker> markers = {};
   Set<Polyline> polylines = {};
   Motorista? driver;
-  StreamSubscription<Position>? positionStream;
+  final driverLocationProvider = Provider.of<DriverLocationProvider>;
 
   onCreated(GoogleMapController controller) {
     _controller = controller;
+    addListenerDriverLocation();
   }
 
   signOut() {
@@ -43,18 +46,6 @@ class _DriverHomePageState extends State<DriverHomePage> {
     driver = await Motorista.getData(driverId);
   }
 
-  updateDriveLocation(LatLng driverPosition) async {
-    final auth = FirebaseAuth.instance;
-    await FirebaseFirestore.instance
-        .collection("Motoristas")
-        .doc(auth.currentUser!.uid)
-        .update({
-      "latitude": driverPosition.latitude,
-      "longitude": driverPosition.longitude,
-    });
-    updateCamera(driverPosition);
-  }
-
   updateCamera(LatLng driverPosition) {
     setState(() {
       _controller!.animateCamera(CameraUpdate.newLatLng(driverPosition));
@@ -62,16 +53,12 @@ class _DriverHomePageState extends State<DriverHomePage> {
   }
 
   addListenerDriverLocation() {
-    LocationSettings locationSettings = const LocationSettings(
-        accuracy: LocationAccuracy.bestForNavigation, distanceFilter: 10);
-    positionStream =
-        Geolocator.getPositionStream(locationSettings: locationSettings)
-            .listen((Position position) {
-      setState(() {
-        driverPosition = LatLng(position.latitude, position.longitude);
-        updateDriveLocation(driverPosition);
-      });
-    });
+    driverLocationProvider(context, listen: false)
+        .addListenerDriverLocation(_controller!);
+  }
+
+  stopListenerDriverLocation() {
+    Provider.of<DriverLocationProvider>(context).stopListenerDriverLocation();
   }
 
   @override
@@ -79,14 +66,14 @@ class _DriverHomePageState extends State<DriverHomePage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getUserData();
-      addListenerDriverLocation();
     });
   }
 
   @override
   void dispose() {
+    // TODO: implement dispose
     super.dispose();
-    positionStream?.cancel();
+    stopListenerDriverLocation();
   }
 
   @override
@@ -117,8 +104,9 @@ class _DriverHomePageState extends State<DriverHomePage> {
             height: MediaQuery.of(context).size.height * 0.70,
             child: GoogleMap(
               onMapCreated: onCreated,
-              initialCameraPosition:
-                  CameraPosition(target: driverPosition, zoom: 15),
+              initialCameraPosition: CameraPosition(
+                  target: driverLocationProvider(context).driverPosition,
+                  zoom: 15),
               myLocationEnabled: true,
               markers: markers,
               polylines: polylines,

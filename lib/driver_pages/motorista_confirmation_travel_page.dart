@@ -67,15 +67,21 @@ class _DriveTravelPageState extends State<DriveTravelPage> {
     }
   }
 
-  createMarkers() {
+  createMarkers() async {
     Marker departureMarker = Marker(
       markerId: const MarkerId("departure_marker"),
       position: widget.viagem.departure,
+      icon: await BitmapDescriptor.asset(
+          const ImageConfiguration(size: Size(48, 48)),
+          "assets/images/home_position.png"),
       infoWindow: const InfoWindow(title: "Departure"),
     );
     Marker destinationMarker = Marker(
       markerId: const MarkerId("destination_marker"),
       position: widget.viagem.destination,
+      icon: await BitmapDescriptor.asset(
+          const ImageConfiguration(size: Size(48, 48)),
+          "assets/images/location_pin.png"),
       infoWindow: const InfoWindow(title: "Destination"),
     );
     setState(() {

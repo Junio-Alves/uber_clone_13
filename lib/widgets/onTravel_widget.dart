@@ -11,8 +11,12 @@ class OntravelWidget extends StatefulWidget {
 
 class _OntravelWidgetState extends State<OntravelWidget> {
   Motorista? driver;
+  bool isLoading = true;
   getDriveData() async {
     driver = await Motorista.getData(widget.driverId);
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -24,13 +28,17 @@ class _OntravelWidgetState extends State<OntravelWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(driver!.nome),
-        Text(driver!.carroModelo),
-        Text(driver!.placa),
-        const Text("Viagem aceita!"),
-      ],
-    );
+    return isLoading
+        ? const Center(
+            child: CircularProgressIndicator(),
+          )
+        : Column(
+            children: [
+              Text(driver!.nome),
+              Text(driver!.carroModelo),
+              Text(driver!.placa),
+              const Text("Viagem aceita!"),
+            ],
+          );
   }
 }

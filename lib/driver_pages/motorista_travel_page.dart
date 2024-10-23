@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:uber_clone_13/models/viagem_model.dart';
+import 'package:uber_clone_13/provider/driver_location_provider.dart';
 import 'package:uber_clone_13/widgets/drawer_widget.dart';
 
 class MotoristaTravelPage extends StatefulWidget {
@@ -22,9 +25,40 @@ class MotoristaTravelPage extends StatefulWidget {
 
 class _MotoristaTravelPageState extends State<MotoristaTravelPage> {
   GoogleMapController? _controller;
-
+  final driverLocationProvider = Provider.of<DriverLocationProvider>;
+  double distancia = 0;
   onCreated(GoogleMapController controller) {
     _controller = controller;
+    addListenerDriverLocation();
+  }
+
+  addListenerDriverLocation() {
+    driverLocationProvider(context, listen: false)
+        .addListenerDriverLocation(_controller!);
+  }
+
+  stopListenerDriverLocation() {
+    driverLocationProvider(context).stopListenerDriverLocation();
+  }
+
+  teste() {
+    double distance = Geolocator.distanceBetween(
+      widget.viagem.departure.latitude,
+      widget.viagem.departure.longitude,
+      widget.viagem.destination.latitude,
+      widget.viagem.destination.longitude,
+    );
+    print(distance);
+    setState(() {
+      distancia = distance;
+    });
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    stopListenerDriverLocation();
   }
 
   @override
@@ -42,19 +76,20 @@ class _MotoristaTravelPageState extends State<MotoristaTravelPage> {
       drawer: const DrawerWidget(),
       body: Column(
         children: [
-          Stack(children: [
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.80,
-              child: GoogleMap(
-                onMapCreated: onCreated,
-                initialCameraPosition: CameraPosition(
-                    target: widget.initialPosition, zoom: 18, tilt: 90),
-                myLocationEnabled: true,
-                polylines: widget.polylines,
-                markers: widget.markers,
-              ),
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.80,
+            child: GoogleMap(
+              onMapCreated: onCreated,
+              initialCameraPosition: CameraPosition(
+                  target: widget.initialPosition, zoom: 18, tilt: 90),
+              myLocationEnabled: true,
+              polylines: widget.polylines,
+              markers: widget.markers,
             ),
-          ]),
+          ),
+          ElevatedButton(
+              onPressed: () => teste(), child: const Text("distancia")),
+          Text(distancia.toString()),
         ],
       ),
     );
