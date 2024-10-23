@@ -30,7 +30,7 @@ class ViagemWidget extends StatelessWidget {
                 children: [
                   Icon(Icons.arrow_downward_outlined),
                   Text(
-                    "R\$ 10.00",
+                    "",
                     style: TextStyle(
                       fontSize: 17,
                       color: Colors.green,

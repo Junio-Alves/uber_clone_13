@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:uber_clone_13/models/viagem_model.dart';
 import 'package:uber_clone_13/widgets/drawer_widget.dart';
+import 'package:uber_clone_13/widgets/viagem_widget.dart';
 
 class ConfirmationPage extends StatefulWidget {
   final Viagem viagem;
@@ -87,11 +88,10 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
         ),
         backgroundColor: Colors.black,
       ),
-      drawer: const DrawerWidget(),
       body: Column(
         children: [
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.65,
+            height: MediaQuery.of(context).size.height * 0.50,
             child: GoogleMap(
               onMapCreated: onCreated,
               initialCameraPosition:
@@ -101,17 +101,52 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
               polylines: polylines,
             ),
           ),
-          const Text("Confirmar viagem?"),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pushReplacementNamed(context, "/home");
-            },
-            child: const Text("Cancelar"),
+          Padding(
+            padding: EdgeInsets.all(10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(left: 10),
+                  child: Text(
+                    "Confirme sua viagem",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                  ),
+                ),
+                ViagemWidget(
+                    departureAddress: widget.viagem.departureAddress,
+                    destinationAddress: widget.viagem.destinationAddress,
+                    onTap: () {}),
+                const SizedBox(
+                  height: 20,
+                ),
+                ListTile(
+                  leading: Image.asset("assets/images/car_icon.png"),
+                  title: const Text(
+                    "Carro Particular",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                  ),
+                  trailing: const Text(
+                    "R\$ 10,00",
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                ElevatedButton(
+                  onPressed: () => confirmTravel(),
+                  style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 50),
+                      backgroundColor: Colors.black),
+                  child: const Text(
+                    "Confirmar",
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                  ),
+                )
+              ],
+            ),
           ),
-          ElevatedButton(
-            onPressed: () => confirmTravel(),
-            child: const Text("Confirmar"),
-          )
         ],
       ),
     );
