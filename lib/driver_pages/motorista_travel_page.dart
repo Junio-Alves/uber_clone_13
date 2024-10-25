@@ -1,21 +1,22 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:uber_clone_13/models/viagem_model.dart';
 import 'package:uber_clone_13/provider/driver_location_provider.dart';
-import 'package:uber_clone_13/provider/viagem_provider.dart';
 import 'package:uber_clone_13/widgets/drawer_widget.dart';
 
 class MotoristaTravelPage extends StatefulWidget {
   final Set<Polyline> polylines;
   final Set<Marker> markers;
   final LatLng initialPosition;
-  const MotoristaTravelPage({
-    super.key,
-    required this.polylines,
-    required this.markers,
-    required this.initialPosition,
-  });
+  final Viagem viagem;
+  const MotoristaTravelPage(
+      {super.key,
+      required this.polylines,
+      required this.markers,
+      required this.initialPosition,
+      required this.viagem});
 
   @override
   State<MotoristaTravelPage> createState() => _MotoristaTravelPageState();
@@ -23,11 +24,13 @@ class MotoristaTravelPage extends StatefulWidget {
 
 class _MotoristaTravelPageState extends State<MotoristaTravelPage> {
   GoogleMapController? _controller;
+  final store = FirebaseFirestore.instance;
   final driverLocationProvider = Provider.of<DriverLocationProvider>;
-  double distancia = 0;
+  bool rideStarted = false;
   onCreated(GoogleMapController controller) {
     _controller = controller;
     addListenerDriverLocation();
+    driverLocationProvider(context).setViagem(widget.viagem);
   }
 
   addListenerDriverLocation() {
@@ -39,6 +42,23 @@ class _MotoristaTravelPageState extends State<MotoristaTravelPage> {
     driverLocationProvider(context).stopListenerDriverLocation();
   }
 
+  iniciarViagem() async {
+    setState(() {
+      rideStarted = true;
+    });
+    final viagem = widget.viagem;
+    viagem.status = "RideStarted";
+    await store.collection("viagens").doc(viagem.userId).update(viagem.toMap());
+  }
+
+  finalizarViagem() async {
+    final viagem = widget.viagem;
+    viagem.status = "RideCompleted";
+    await store.collection("viagens").doc(viagem.userId).update(viagem.toMap());
+    if (mounted)
+      Navigator.pushNamedAndRemoveUntil(context, "/home", (_) => false);
+  }
+
   @override
   void dispose() {
     // TODO: implement dispose
@@ -48,8 +68,6 @@ class _MotoristaTravelPageState extends State<MotoristaTravelPage> {
 
   @override
   Widget build(BuildContext context) {
-    ViagemProvider viagemProvider = Provider.of<ViagemProvider>(context);
-
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -74,6 +92,13 @@ class _MotoristaTravelPageState extends State<MotoristaTravelPage> {
               markers: widget.markers,
             ),
           ),
+          rideStarted
+              ? ElevatedButton(
+                  onPressed: () => finalizarViagem(),
+                  child: const Text("Finalizar Viagem"))
+              : ElevatedButton(
+                  onPressed: () => iniciarViagem(),
+                  child: const Text("Iniciar Viagem"))
         ],
       ),
     );

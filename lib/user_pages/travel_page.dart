@@ -59,7 +59,7 @@ class _UserTravelPageState extends State<UserTravelPage> {
   }
 
   getUserCurrentPosition() async {
-    final userPosition = await Locator.getUserCurrentPosition();
+    final userPosition = await GeoLocator.getUserCurrentPosition();
     setState(() {
       _controller!.animateCamera(CameraUpdate.newLatLng(userPosition));
     });
@@ -197,13 +197,20 @@ class _UserTravelPageState extends State<UserTravelPage> {
                 case (ConnectionState.active):
                 case (ConnectionState.done):
                   final viagem = snapshot.data!.data() as Map<String, dynamic>;
-
-                  if (viagem["status"] == "pending") {
-                    return PendingTravelWidget(cancelTravel: cancelTravel);
-                  } else {
-                    onTravelAccepted(viagem["driverId"]);
-                    return OntravelWidget(driverId: viagem["driverId"]);
+                  switch (viagem["status"]) {
+                    case "pending":
+                      return PendingTravelWidget(cancelTravel: cancelTravel);
+                    case "onTravel":
+                      onTravelAccepted(viagem["driverId"]);
+                      return OntravelWidget(driverId: viagem["driverId"]);
+                    case "RideStarted":
+                      onTravelAccepted(viagem["driverId"]);
+                      return OntravelWidget(driverId: viagem["driverId"]);
+                    case "RideCompleted":
+                      Navigator.pushNamedAndRemoveUntil(
+                          context, "/home", (_) => false);
                   }
+                  return Container();
               }
             },
           )

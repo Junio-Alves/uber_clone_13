@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:uber_clone_13/models/user_model.dart';
+import 'package:uber_clone_13/provider/user_provider.dart';
 import 'package:uber_clone_13/utils/geolocator.dart';
 import 'package:uber_clone_13/widgets/choose_travel_widget.dart';
 import 'package:uber_clone_13/widgets/drawer_widget.dart';
@@ -19,6 +21,7 @@ class _HomePageState extends State<HomePage> {
   final textController = TextEditingController();
   Set<Marker> markers = {};
   Set<Polyline> polylines = {};
+  late UserProvider userProvider;
   Profile? usuario;
 
   onCreated(GoogleMapController controller) {
@@ -30,13 +33,8 @@ class _HomePageState extends State<HomePage> {
     Navigator.pushNamed(context, "/search");
   }
 
-  getUserData() async {
-    usuario = await Profile.getUserData();
-    setState(() {});
-  }
-
   getUserCurrentPosition() async {
-    final userPosition = await Locator.getUserCurrentPosition();
+    final userPosition = await GeoLocator.getUserCurrentPosition();
     setState(() {
       _controller!.animateCamera(CameraUpdate.newLatLng(userPosition));
     });
@@ -46,7 +44,10 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      getUserData();
+      userProvider = Provider.of<UserProvider>(context, listen: false);
+      setState(() {
+        usuario = userProvider.user;
+      });
     });
   }
 
@@ -62,7 +63,7 @@ class _HomePageState extends State<HomePage> {
         ),
         backgroundColor: Colors.black,
       ),
-      drawer: DrawerWidget(),
+      drawer: const DrawerWidget(),
       body: Column(
         children: [
           SizedBox(

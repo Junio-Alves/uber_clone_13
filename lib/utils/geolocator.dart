@@ -1,7 +1,7 @@
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class Locator {
+class GeoLocator {
   static Future<LatLng> getUserCurrentPosition() async {
     // default position
     LatLng latLng = const LatLng(-15.790255, -47.888944);

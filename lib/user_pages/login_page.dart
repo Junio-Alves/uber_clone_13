@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:uber_clone_13/models/user_model.dart';
+import 'package:uber_clone_13/provider/user_provider.dart';
 import 'package:uber_clone_13/widgets/formField_widget.dart';
 import 'package:uber_clone_13/widgets/popUp_widget.dart';
 
@@ -14,19 +17,22 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController(text: "test@gmail.com");
   final senhaController = TextEditingController(text: "123456");
+  final store = FirebaseFirestore.instance;
+  final auth = FirebaseAuth.instance;
   final _formKey = GlobalKey<FormState>();
+  late UserProvider userProvider;
   cadastrar() {
     Navigator.pushNamed(context, "/cadastro");
   }
 
   login(String email, String password) async {
     if (_formKey.currentState!.validate()) {
-      final auth = FirebaseAuth.instance;
       try {
         await auth.signInWithEmailAndPassword(
           email: email,
           password: password,
         );
+        getUserData();
         isUserOrIsDriver();
       } catch (e) {
         if (mounted) {
@@ -36,28 +42,36 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  //Verifica se o usuario é um motorista ou usario, e redireciona para suas respectivas telas!
+  //Verifica se o usuario é um motorista ou usuario, e redireciona para suas respectivas telas!
   isUserOrIsDriver() async {
-    final auth = FirebaseAuth.instance;
     final userId = auth.currentUser!.uid;
-    final store = FirebaseFirestore.instance;
+
     DocumentSnapshot<Map<String, dynamic>> usuario =
         await store.collection("usuarios").doc(userId).get();
     if (usuario.data() != null) {
       if (mounted) Navigator.pushReplacementNamed(context, "/home");
+    } else {
+      if (mounted) Navigator.pushReplacementNamed(context, "/driver_home");
     }
+
+    /*
     DocumentSnapshot<Map<String, dynamic>> motorista =
         await store.collection("Motoristas").doc(userId).get();
     if (motorista.data() != null) {
       if (mounted) Navigator.pushReplacementNamed(context, "/driver_home");
     }
+     */
   }
 
   verificarLogin() {
-    final auth = FirebaseAuth.instance;
     if (auth.currentUser != null) {
       isUserOrIsDriver();
     }
+  }
+
+  getUserData() async {
+    Profile usuario = await Profile.getUserData();
+    userProvider.updateUser(usuario);
   }
 
   @override
@@ -68,6 +82,7 @@ class _LoginPageState extends State<LoginPage> {
     após a construção da interface */
     WidgetsBinding.instance.addPostFrameCallback((_) {
       verificarLogin();
+      userProvider = Provider.of<UserProvider>(context, listen: false);
     });
   }
 

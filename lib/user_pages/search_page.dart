@@ -57,7 +57,7 @@ class _SearchPageState extends State<SearchPage> {
 
   getAddressFromGeolocation() async {
     List<Placemark> locationsDeparture = [];
-    final departure = await Locator.getUserCurrentPosition();
+    final departure = await GeoLocator.getUserCurrentPosition();
     try {
       locationsDeparture = await placemarkFromCoordinates(
           departure.latitude, departure.longitude);

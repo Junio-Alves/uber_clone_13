@@ -115,12 +115,14 @@ class _DriveTravelPageState extends State<DriveTravelPage> {
     //sei que é gambiarra e eu deveria ter feito getters e setters
     viagem.driverId = motorista.driverUid;
     viagem.status = "onTravel";
+    //atualizar status e driver no firebase
     await store.collection("viagens").doc(viagem.userId).update(viagem.toMap());
     if (mounted) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => MotoristaTravelPage(
+              viagem: widget.viagem,
               polylines: polylines,
               markers: markers,
               initialPosition: widget.viagem.departure),
@@ -178,7 +180,9 @@ class _DriveTravelPageState extends State<DriveTravelPage> {
                         child: const Text("Cancelar"),
                       ),
                       ElevatedButton(
-                        onPressed: () => startTravel(),
+                        onPressed: () {
+                          startTravel();
+                        },
                         child: const Text("Iniciar"),
                       ),
                     ],

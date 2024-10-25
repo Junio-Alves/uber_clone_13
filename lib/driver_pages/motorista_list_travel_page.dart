@@ -26,7 +26,6 @@ class _ListTravelsPageState extends State<ListTravelsPage> {
   LatLng? driver;
   Set<Marker> markers = {};
   Set<Polyline> polylines = {};
-  late ViagemProvider viagemProvider;
 
   @override
   void initState() {
@@ -34,7 +33,6 @@ class _ListTravelsPageState extends State<ListTravelsPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getUserCurrentPosition();
-      viagemProvider = Provider.of<ViagemProvider>(context);
     });
   }
 
