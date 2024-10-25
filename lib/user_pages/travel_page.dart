@@ -175,7 +175,7 @@ class _UserTravelPageState extends State<UserTravelPage> {
       body: Column(
         children: [
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.65,
+            height: MediaQuery.of(context).size.height * 0.55,
             child: GoogleMap(
               onMapCreated: onCreated,
               initialCameraPosition:
@@ -205,7 +205,10 @@ class _UserTravelPageState extends State<UserTravelPage> {
                       return OntravelWidget(driverId: viagem["driverId"]);
                     case "RideStarted":
                       onTravelAccepted(viagem["driverId"]);
-                      return OntravelWidget(driverId: viagem["driverId"]);
+                      return OntravelWidget(
+                        driverId: viagem["driverId"],
+                        textAlert: "Viagem Iniciada",
+                      );
                     case "RideCompleted":
                       Navigator.pushNamedAndRemoveUntil(
                           context, "/home", (_) => false);

@@ -3,7 +3,9 @@ import 'package:uber_clone_13/models/driver_model.dart';
 
 class OntravelWidget extends StatefulWidget {
   final String driverId;
-  const OntravelWidget({super.key, required, required this.driverId});
+  final String? textAlert;
+  const OntravelWidget(
+      {super.key, required, required this.driverId, this.textAlert});
 
   @override
   State<OntravelWidget> createState() => _OntravelWidgetState();
@@ -33,11 +35,38 @@ class _OntravelWidgetState extends State<OntravelWidget> {
             child: CircularProgressIndicator(),
           )
         : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(driver!.nome),
-              Text(driver!.carroModelo),
-              Text(driver!.placa),
-              const Text("Viagem aceita!"),
+              const Padding(
+                padding: EdgeInsets.all(20.0),
+                child: Text(
+                  "Boas Noticias! Viagem Aceita.\nMotorista a caminho do seu endereço.",
+                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                ),
+              ),
+              Card(
+                child: ListTile(
+                  leading: const CircleAvatar(
+                    radius: 50,
+                  ),
+                  title: Text(
+                    driver!.nome,
+                    style: const TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                  subtitle: Text(
+                      "Carro: ${driver!.carroModelo}\nPlaca: ${driver!.placa}\n "),
+                ),
+              ),
+              if (widget.textAlert != null) ...{
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Text(
+                    widget.textAlert!,
+                    style: const TextStyle(
+                        fontSize: 17, fontWeight: FontWeight.w600),
+                  ),
+                ),
+              }
             ],
           );
   }

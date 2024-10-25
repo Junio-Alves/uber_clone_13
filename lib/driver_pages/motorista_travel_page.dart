@@ -55,8 +55,9 @@ class _MotoristaTravelPageState extends State<MotoristaTravelPage> {
     final viagem = widget.viagem;
     viagem.status = "RideCompleted";
     await store.collection("viagens").doc(viagem.userId).update(viagem.toMap());
-    if (mounted)
+    if (mounted) {
       Navigator.pushNamedAndRemoveUntil(context, "/home", (_) => false);
+    }
   }
 
   @override
@@ -95,10 +96,24 @@ class _MotoristaTravelPageState extends State<MotoristaTravelPage> {
           rideStarted
               ? ElevatedButton(
                   onPressed: () => finalizarViagem(),
-                  child: const Text("Finalizar Viagem"))
+                  style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 50),
+                      backgroundColor: Colors.black),
+                  child: const Text(
+                    "Finalizar Viagem",
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                  ),
+                )
               : ElevatedButton(
                   onPressed: () => iniciarViagem(),
-                  child: const Text("Iniciar Viagem"))
+                  style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 50),
+                      backgroundColor: Colors.black),
+                  child: const Text(
+                    "iniciarViagem",
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                  ),
+                )
         ],
       ),
     );
